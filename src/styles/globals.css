@@ -1,0 +1,28 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-*: initial;
+
+  /* Colors */
+  --color-purple: rgba(93, 63, 211, 1);
+  --color-red: rgba(210, 43, 43);
+  --color-dark-gray: rgba(96, 107, 108, 1);
+  --color-blue-gray: rgba(173, 194, 195, 1);
+  --color-blue-black: rgba(24, 30, 31, 1);
+  --color-black: rgba(20, 20, 20, 1);
+  --color-white: rgba(250, 250, 250, 1);
+  --color-light-gray: rgba(201, 206, 214, 1);
+
+  /* Fonts */
+  --font-raleway: var(--font-raleway);
+  --font-montserrat: var(--font-montserrat);
+}
+
+@theme inline {
+  --color-primary: var(--color-purple);
+  --color-secondary: var(--color-dark-gray);
+  --color-tertiary: var(--color-blue-gray);
+
+  --color-background: var(--color-black);
+  --color-foreground: var(--color-white);
+}
