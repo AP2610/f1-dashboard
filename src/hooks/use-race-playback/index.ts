@@ -7,6 +7,7 @@ export const useRacePlayback = () => {
   const lastTimestamp = useRef<number | null>(null);
 
   const tick = useSessionTimeLineStore((state) => state.tick);
+  const setIsPlaying = useSessionTimeLineStore((state) => state.setIsPlaying);
 
   // The loop function that is called on every animation frame
   const loop = (timestamp: number) => {
@@ -14,7 +15,10 @@ export const useRacePlayback = () => {
       lastTimestamp.current = timestamp;
     }
 
+    // Calculate the delta time between the current timestamp and the last timestamp which is when the last frame was rendered
     const deltaTime = timestamp - lastTimestamp.current;
+
+    // set the last timestamp to the current timestamp so we can calculate the delta time in the next frame
     lastTimestamp.current = timestamp;
 
     tick(deltaTime);
@@ -31,18 +35,26 @@ export const useRacePlayback = () => {
     };
   }, []);
 
+  // TODO: Add pause
+
+  const start = () => {
+    // Reset the last timestamp to start the loop from the beginning
+    setIsPlaying(true);
+    lastTimestamp.current = null;
+    animationFrameId.current = requestAnimationFrame(loop);
+  };
+
+  const stop = () => {
+    // Cancel the animation frame and reset the animation frame id
+    if (animationFrameId.current) {
+      setIsPlaying(false);
+      cancelAnimationFrame(animationFrameId.current);
+      animationFrameId.current = null;
+    }
+  };
+
   return {
-    start: () => {
-      // Reset the last timestamp to start the loop from the beginning
-      lastTimestamp.current = null;
-      animationFrameId.current = requestAnimationFrame(loop);
-    },
-    stop: () => {
-      // Cancel the animation frame and reset the animation frame id
-      if (animationFrameId.current) {
-        cancelAnimationFrame(animationFrameId.current);
-        animationFrameId.current = null;
-      }
-    },
+    start,
+    stop,
   };
 };

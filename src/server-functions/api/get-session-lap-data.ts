@@ -12,17 +12,19 @@ const lapDataSchema = z.object({
   duration_sector_2: z.number().nullable(),
   duration_sector_3: z.number().nullable(),
   is_pit_out_lap: z.boolean(),
-  lap_duration: z.number().nullable(),
+  // Convert seconds to milliseconds
+  lap_duration: z
+    .number()
+    .transform((val) => (val ? val * 1000 : null))
+    .nullable(),
   lap_number: z.number(),
 });
 
-type LapData = z.infer<typeof lapDataSchema>;
+export type LapData = z.infer<typeof lapDataSchema>;
+export type LapDataMap = Record<number, LapData[]>;
 
-export const getSessionLapData = async (
-  sessionKey: number,
-  lapNumber: number,
-): Promise<BaseReturnType<Record<number, LapData[]>>> => {
-  const path = `/laps?session_key=${sessionKey}&lap_number<=${lapNumber}`;
+export const getSessionLapData = async (raceSessionKey: number, lapNumber: number): Promise<BaseReturnType<LapDataMap>> => {
+  const path = `/laps?session_key=${raceSessionKey}&lap_number<=${lapNumber}`;
 
   // Validated the data is an array of lap data
   const schema = z.array(lapDataSchema);
@@ -34,7 +36,7 @@ export const getSessionLapData = async (
     return { hasError, errorMessage, data: null };
   }
 
-  const lapsByDriverNumberMap: Record<number, LapData[]> = {};
+  const lapsByDriverNumberMap: LapDataMap = {};
 
   // Group the laps by driver number
   for (const lap of sessionLapData) {

@@ -2,6 +2,7 @@
 
 import { CONSTANTS } from '@/lib/constants';
 import { BaseReturnType } from '@/lib/types/api-types';
+import { isArray } from '@/lib/utils/generic';
 import { z } from 'zod';
 
 // Generic function to fetch api data, validate it with a zod schema, handle errors and return the data
@@ -22,6 +23,14 @@ export const getApiData = async <T>(path: string, schema: z.ZodSchema<T>): Promi
 
     // Validate the data with the zod schema
     const validatedData = schema.parse(data);
+
+    if (isArray(validatedData) && validatedData.length === 0) {
+      return {
+        hasError: true,
+        errorMessage: `No data found for ${path}`,
+        data: null,
+      };
+    }
 
     return {
       hasError: false,

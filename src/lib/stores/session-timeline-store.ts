@@ -1,15 +1,15 @@
 import { create } from 'zustand';
 
-type PlaybackSpeed = 1 | 2 | 5;
+export type PlaybackSpeed = 1 | 2 | 5 | 10;
 
 interface SessionTimelineStore {
-  sessionKey: number | null;
+  raceSessionKey: number | null;
   sessionStartTime: number | null;
   sessionEndTime: number | null;
-  currentTime: number;
+  currentTime: number | null;
   playbackSpeed: PlaybackSpeed;
   isPlaying: boolean;
-  setSession: (sessionKey: number, sessionStartTime: number, sessionEndTime: number, currentTime: number) => void;
+  setSession: (raceSessionKey: number, sessionStartTime: number, sessionEndTime: number, currentTime: number) => void;
   setPlaybackSpeed: (playbackSpeed: PlaybackSpeed) => void;
   setIsPlaying: (isPlaying: boolean) => void;
   seek: (timeToSeekTo: number) => void;
@@ -18,16 +18,16 @@ interface SessionTimelineStore {
 
 // The store controls the playback of a session
 export const useSessionTimeLineStore = create<SessionTimelineStore>((set) => ({
-  sessionKey: null,
+  raceSessionKey: null,
   sessionStartTime: null,
   sessionEndTime: null,
-  currentTime: 0,
+  currentTime: null,
   playbackSpeed: 1,
   isPlaying: false,
 
   // Setters
-  setSession: (sessionKey: number, sessionStartTime: number, sessionEndTime: number, currentTime: number) =>
-    set({ sessionKey, sessionStartTime, sessionEndTime, currentTime }),
+  setSession: (raceSessionKey: number, sessionStartTime: number, sessionEndTime: number, currentTime: number) =>
+    set({ raceSessionKey, sessionStartTime, sessionEndTime, currentTime }),
   setPlaybackSpeed: (playbackSpeed: PlaybackSpeed) => set({ playbackSpeed }),
   setIsPlaying: (isPlaying: boolean) => set({ isPlaying }),
 
@@ -36,9 +36,8 @@ export const useSessionTimeLineStore = create<SessionTimelineStore>((set) => ({
     set((state) => {
       const { sessionStartTime, sessionEndTime, currentTime } = state;
 
-      // Just return the current time if the session bounds are not set
-      if (!sessionStartTime || !sessionEndTime) {
-        return { currentTime };
+      if (!sessionStartTime || !sessionEndTime || !currentTime) {
+        return {};
       }
 
       // if timeToSeekTo is less than sessionStartTime, set it to sessionStartTime
@@ -53,14 +52,22 @@ export const useSessionTimeLineStore = create<SessionTimelineStore>((set) => ({
     set((state) => {
       const { sessionStartTime, sessionEndTime, currentTime, playbackSpeed, isPlaying } = state;
 
-      if (!isPlaying || !sessionStartTime || !sessionEndTime) {
-        return { currentTime };
+      if (!isPlaying || !sessionStartTime || !sessionEndTime || !currentTime) {
+        return {}; // No state change - currentTime stays the same
       }
 
+      // Calculate where we should be after this tick
+      // Example: if deltaTime=16ms and speed=5x, we advance 80ms
       const nextTime = currentTime + deltaTime * playbackSpeed;
 
+      // Ensure the new time is within valid bounds
       return {
-        currentTime: Math.min(Math.max(nextTime, sessionStartTime), sessionEndTime),
+        currentTime: Math.min(
+          // First, ensure we don't go before the race started
+          Math.max(nextTime, sessionStartTime),
+          // Then, ensure we don't go past the race ended
+          sessionEndTime,
+        ),
       };
     }),
 }));

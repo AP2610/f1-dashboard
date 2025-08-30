@@ -11,10 +11,10 @@ const sessionApiDataSchema = z.object({
   location: z.string(),
 });
 
-type SessionData = z.infer<typeof sessionApiDataSchema>;
+export type SessionData = z.infer<typeof sessionApiDataSchema>;
 
-export const getSessionData = async (sessionKey: number): Promise<BaseReturnType<SessionData>> => {
-  const path = `/sessions?session_key=${sessionKey}`;
+export const getSessionData = async (raceSessionKey: number): Promise<BaseReturnType<SessionData>> => {
+  const path = `/sessions?session_key=${raceSessionKey}`;
 
   // Validated the data is an array of session data
   const schema = z.array(sessionApiDataSchema);

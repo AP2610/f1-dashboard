@@ -19,10 +19,11 @@ const driverDataSchema = z.object({
   team_name: z.string(),
 });
 
-type DriverData = z.infer<typeof driverDataSchema>;
+export type DriverData = z.infer<typeof driverDataSchema>;
+export type DriverDataMap = Record<number, DriverData>;
 
-export const getSessionDriverData = async (sessionKey: number): Promise<BaseReturnType<Record<number, DriverData>>> => {
-  const path = `/drivers?session_key=${sessionKey}`;
+export const getSessionDriverData = async (raceSessionKey: number): Promise<BaseReturnType<DriverDataMap>> => {
+  const path = `/drivers?session_key=${raceSessionKey}`;
 
   // Validated the data is an array of driver data
   const schema = z.array(driverDataSchema);
@@ -34,7 +35,7 @@ export const getSessionDriverData = async (sessionKey: number): Promise<BaseRetu
     return { hasError, errorMessage, data: null };
   }
 
-  const driversByNumberMap: Record<number, DriverData> = {};
+  const driversByNumberMap: DriverDataMap = {};
 
   for (const driver of sessionDriverData) {
     driversByNumberMap[driver.driver_number] = driver;
