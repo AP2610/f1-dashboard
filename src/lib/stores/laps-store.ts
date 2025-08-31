@@ -4,6 +4,7 @@ import { create } from 'zustand';
 interface LapsStore {
   lapsByDriver: LapDataMap;
   setLapsByDriver: (lapsByDriver: LapDataMap) => void;
+  addLapsByDriver: (lapsByDriver: LapDataMap) => void;
 }
 
 export const useLapsStore = create<LapsStore>((set) => ({
