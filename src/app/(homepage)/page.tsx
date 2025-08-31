@@ -22,7 +22,7 @@ const Home = async () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-16 p-8 pb-20 sm:p-20">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-16 p-8">
       <RaceDashboard
         // Safe non-null assertion because we know the data is not null due to error checking above
         sessionStartTime={sessionData.data!.date_start!}

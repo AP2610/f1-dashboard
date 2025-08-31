@@ -38,15 +38,15 @@ export const RaceDashboard = ({
   }, [sessionStartTime, sessionEndTime, initialLapsByDriver]);
 
   return (
-    <Section className="grid grid-cols-12 gap-8">
+    <Section isFullWidth className="grid grid-cols-12 gap-8">
       {/* Standings */}
-      <div className="col-span-4 space-y-8">
+      <div className="col-span-3 space-y-8">
         <LapCounter sessionStartTime={sessionStartTime} />
 
         <Standings />
       </div>
 
-      <div className="col-span-8 space-y-8">
+      <div className="col-span-9 space-y-8">
         {/* Replace with heading component */}
         <h2>Track Map</h2>
 
