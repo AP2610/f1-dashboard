@@ -3,17 +3,14 @@ import { getSessionDriverData } from '@/server-functions/api/get-session-driver-
 import { getSessionLapData } from '@/server-functions/api/get-session-lap-data';
 import { getSessionData } from '@/server-functions/api/get-session-data';
 import { RaceDashboard } from '@/components/features/race-dashboard';
-import { getPoleSitter } from '@/server-functions/api/get-pole-sitter';
 
 const Home = async () => {
   const sessionData = await getSessionData(CONSTANTS.raceSessionKey);
   const sessionDriverData = await getSessionDriverData(CONSTANTS.raceSessionKey);
   const sessionLapData = await getSessionLapData(CONSTANTS.raceSessionKey, 25);
-  const poleSitter = await getPoleSitter(CONSTANTS.raceSessionKey);
   console.log('sessionData: ', sessionData);
   console.log('sessionDriverData: ', sessionDriverData);
   console.log('sessionLapData: ', sessionLapData);
-  console.log('poleSitter: ', poleSitter);
 
   if (sessionData.hasError || sessionDriverData.hasError || sessionLapData.hasError) {
     return (
@@ -32,7 +29,6 @@ const Home = async () => {
         sessionEndTime={sessionData.data!.date_end!}
         sessionDriverData={sessionDriverData.data!}
         initialLapsByDriver={sessionLapData.data!}
-        poleSitterDriverNumber={poleSitter.data!.driver_number}
       />
     </div>
   );

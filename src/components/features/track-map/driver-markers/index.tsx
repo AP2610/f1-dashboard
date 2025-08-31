@@ -2,44 +2,9 @@
 
 import { useSessionTimeLineStore } from '@/lib/stores/session-timeline-store';
 import { DriverDataMap } from '@/server-functions/api/get-session-driver-data';
-import { LapData, LapDataMap } from '@/server-functions/api/get-session-lap-data';
+import { findCurrentLap, getDriverLapProgress } from '@/lib/utils/lap-helpers';
 import { useMemo } from 'react';
-
-const findCurrentLap = (currentTime: number, lapsByDriver: LapData[], sessionStartTime: number) => {
-  for (let index = 0; index < lapsByDriver.length; index++) {
-    const currentLap = lapsByDriver[index];
-    const nextLap = lapsByDriver[index + 1];
-    let lapDuration: number;
-    const startLapTime = currentLap.date_start ? currentLap.date_start : sessionStartTime;
-
-    // if (currentLap.lap_number === 1 && nextLap.lap_duration && nextLap.date_start) {
-    //   startLapTime = nextLap.date_start - nextLap.lap_duration;
-    // } else {
-    //   startLapTime = currentLap.date_start ?? 0;
-    // }
-
-    if (currentLap.lap_number === 1 && nextLap.date_start) {
-      lapDuration = nextLap.date_start - startLapTime;
-    } else {
-      lapDuration = currentLap.lap_duration ?? 0;
-    }
-
-    const endLapTime = startLapTime + lapDuration;
-
-    // CurrentTime < endLapTime, not <= to avoid potential lap overlap issues
-    if (currentTime >= startLapTime && currentTime < endLapTime) {
-      return { startLapTime, endLapTime, lapDuration, lapNumber: currentLap.lap_number };
-    }
-  }
-  return null;
-};
-
-const getDriverLapProgress = (startLapTime: number, lapDuration: number, currentTime: number) => {
-  const progress = (currentTime - startLapTime) / lapDuration;
-
-  // Clamp the progress between 0 and 1
-  return Math.max(0, Math.min(1, progress));
-};
+import { useLapsStore } from '@/lib/stores/laps-store';
 
 type DriverMarker = {
   driverNumber: number;
@@ -52,7 +17,6 @@ type DriverMarker = {
 interface DriverMarkerOverlayProps {
   pathRef: React.RefObject<SVGPathElement>;
   drivers: DriverDataMap;
-  lapsByDriver: LapDataMap;
   sessionStartTime: number;
   driverNumbersToShow?: number[];
   dotRadius?: number;
@@ -62,13 +26,13 @@ interface DriverMarkerOverlayProps {
 export const DriverMarkers = ({
   pathRef,
   drivers,
-  lapsByDriver,
   sessionStartTime,
   driverNumbersToShow,
   dotRadius = 8,
   showLabels = true,
 }: DriverMarkerOverlayProps) => {
-  const currentTime = useSessionTimeLineStore((s) => s.currentTime);
+  const currentTime = useSessionTimeLineStore((state) => state.currentTime);
+  const lapsByDriver = useLapsStore((state) => state.lapsByDriver);
   const path = pathRef.current;
 
   // compute path length once per render
@@ -107,7 +71,7 @@ export const DriverMarkers = ({
   return (
     <>
       {driverMarkers &&
-        driverMarkers.map((driverMarker) => (
+        driverMarkers.reverse().map((driverMarker) => (
           <g key={driverMarker.driverNumber} transform={`translate(${driverMarker.point.x}, ${driverMarker.point.y})`}>
             <circle r={dotRadius} strokeWidth={1} style={{ fill: driverMarker.hex }} className="stroke-light" />
 
@@ -122,7 +86,7 @@ export const DriverMarkers = ({
                   rx={2} // rounded corners
                 />
 
-                <text x={dotRadius + 8} y={4} fontSize={14} className="fill-light">
+                <text fontWeight="bold" x={dotRadius + 8} y={4} fontSize={14} className="fill-light">
                   {driverMarker.label}
                 </text>
               </>
