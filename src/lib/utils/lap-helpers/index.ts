@@ -1,4 +1,4 @@
-import { LapData } from '@/server-functions/api/get-session-lap-data';
+import { LapData } from '@/server-functions/api/get-laps-for-driver-data';
 
 // returns the current lap window for a given driver. Its used to determine the current lap and lap progress.
 export const findCurrentLap = (currentTime: number, lapsByDriver: LapData[], sessionStartTime: number) => {

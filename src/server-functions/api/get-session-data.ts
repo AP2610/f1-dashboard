@@ -19,7 +19,6 @@ export const getSessionData = async (raceSessionKey: number): Promise<BaseReturn
   // Validated the data is an array of session data
   const schema = z.array(sessionApiDataSchema);
 
-  // Pass SessionData[] as the type of the data to be returned
   const { hasError, errorMessage, data: sessionData } = await getApiData<SessionData[]>(path, schema);
 
   if (hasError || sessionData === null) {

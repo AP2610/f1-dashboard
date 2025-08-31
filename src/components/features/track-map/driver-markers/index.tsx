@@ -1,18 +1,18 @@
 'use client';
 
+import { useDriverStore } from '@/lib/stores/driver-store';
+import { useLapsStore } from '@/lib/stores/laps-store';
 import { useSessionTimeLineStore } from '@/lib/stores/session-timeline-store';
 import { findCurrentLap, getDriverLapProgress } from '@/lib/utils/lap-helpers';
+import { type DriverDataMapWithQualifyingPosition } from '@/server-functions/api/get-session-driver-data-with-qualifying';
 import { useMemo } from 'react';
-import { useLapsStore } from '@/lib/stores/laps-store';
-import { useDriverStore } from '@/lib/stores/driver-store';
-import { DriverDataMap } from '@/server-functions/api/get-session-driver-data';
 
 const getMarkerDetails = (
   currentLap: ReturnType<typeof findCurrentLap>,
   currentTime: number,
   totalPathLength: number,
   path: SVGPathElement,
-  driverData: DriverDataMap,
+  driverData: DriverDataMapWithQualifyingPosition,
   driverNumber: number,
 ) => {
   const progress = getDriverLapProgress(currentLap!.startLapTime, currentLap!.lapDuration, currentTime);
@@ -20,8 +20,8 @@ const getMarkerDetails = (
 
   // Returns x, y for a point on the path at a certain distance along the path
   const point = path.getPointAtLength(distance);
-  const hex = `#${driverData[driverNumber].team_colour ?? '000'}`;
-  const label = driverData[driverNumber].name_acronym;
+  const hex = `#${driverData.get(driverNumber)?.team_colour ?? '000'}`;
+  const label = driverData.get(driverNumber)?.name_acronym ?? '';
 
   return { driverNumber, point, progress, hex, label };
 };
@@ -49,8 +49,7 @@ export const DriverMarkers = ({ pathRef, driverNumbersToShow, dotRadius = 8, sho
   const path = pathRef.current;
 
   const totalPathLength = useMemo(() => (path ? path.getTotalLength() : 0), [path]);
-
-  const driverList = useMemo(() => driverNumbersToShow ?? Object.keys(driverData).map(Number), [driverData, driverNumbersToShow]);
+  const driverList = useMemo(() => driverNumbersToShow ?? Array.from(driverData.keys()), [driverData, driverNumbersToShow]);
 
   const driverMarkers = useMemo(() => {
     if (!path || currentTime == null || totalPathLength === 0 || sessionStartTime == null || driverList.length === 0) {
@@ -58,7 +57,7 @@ export const DriverMarkers = ({ pathRef, driverNumbersToShow, dotRadius = 8, sho
     }
 
     const markers = driverList.map((driverNumber) => {
-      const laps = lapsByDriver[driverNumber];
+      const laps = lapsByDriver.get(driverNumber);
 
       if (!laps || laps.length === 0) return null;
 

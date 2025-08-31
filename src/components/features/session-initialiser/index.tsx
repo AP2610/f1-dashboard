@@ -4,16 +4,16 @@ import { CONSTANTS } from '@/lib/constants';
 import { useDriverStore } from '@/lib/stores/driver-store';
 import { useLapsStore } from '@/lib/stores/laps-store';
 import { useSessionTimeLineStore } from '@/lib/stores/session-timeline-store';
-import { DriverDataMap } from '@/server-functions/api/get-session-driver-data';
-import { LapDataMap } from '@/server-functions/api/get-session-lap-data';
-import { SessionResult } from '@/server-functions/api/get-session-result';
+import { type DriverDataMapWithQualifyingPosition } from '@/server-functions/api/get-session-driver-data-with-qualifying';
+import { type LapDataMap } from '@/server-functions/api/get-laps-for-driver-data';
+import { type SessionResult } from '@/server-functions/api/get-session-result';
 import { useEffect } from 'react';
 
 interface SessionInitialiserProps {
   sessionStartTime: number;
   initialCurrentTime: number;
   sessionEndTime: number;
-  sessionDriverData: DriverDataMap;
+  sessionDriverDataWithQualifying: DriverDataMapWithQualifyingPosition;
   initialLapsByDriver: LapDataMap;
   qualifyingPositionData: SessionResult[];
 }
@@ -22,7 +22,7 @@ export const SessionInitialiser = ({
   sessionStartTime,
   initialCurrentTime,
   sessionEndTime,
-  sessionDriverData,
+  sessionDriverDataWithQualifying,
   initialLapsByDriver,
   qualifyingPositionData,
 }: SessionInitialiserProps) => {
@@ -34,11 +34,11 @@ export const SessionInitialiser = ({
   useEffect(() => {
     setSession(CONSTANTS.raceSessionKey, sessionStartTime, sessionEndTime, initialCurrentTime);
     setLapsByDriver(initialLapsByDriver);
-    setDriverData(sessionDriverData, qualifyingPositionData);
-  }, [sessionStartTime, sessionEndTime, sessionDriverData, initialLapsByDriver, qualifyingPositionData]);
+    setDriverData(sessionDriverDataWithQualifying);
+  }, [sessionStartTime, sessionEndTime, sessionDriverDataWithQualifying, initialLapsByDriver, qualifyingPositionData]);
 
   useEffect(() => {
-    console.log('driverData: ', driverData);
+    console.log('driverData-initialiser: ', driverData);
   }, [driverData]);
 
   return null;

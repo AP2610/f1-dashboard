@@ -18,26 +18,25 @@ const driverDataSchema = z.object({
 });
 
 export type DriverData = z.infer<typeof driverDataSchema>;
-export type DriverDataMap = Record<number, DriverData>;
+export type DriverDataObject = Record<number, DriverData>;
 
-export const getSessionDriverData = async (raceSessionKey: number): Promise<BaseReturnType<DriverDataMap>> => {
+export const getSessionDriverData = async (raceSessionKey: number): Promise<BaseReturnType<DriverDataObject>> => {
   const path = `/drivers?session_key=${raceSessionKey}`;
 
   // Validated the data is an array of driver data
   const schema = z.array(driverDataSchema);
 
-  // Pass DriverData[] as the type of the data to be returned
   const { hasError, errorMessage, data: sessionDriverData } = await getApiData<DriverData[]>(path, schema);
 
   if (hasError || sessionDriverData === null) {
     return { hasError, errorMessage, data: null };
   }
 
-  const driversByNumberMap: DriverDataMap = {};
+  const driversByNumberObject: DriverDataObject = {};
 
   for (const driver of sessionDriverData) {
-    driversByNumberMap[driver.driver_number] = driver;
+    driversByNumberObject[driver.driver_number] = driver;
   }
 
-  return { hasError, errorMessage, data: driversByNumberMap };
+  return { hasError, errorMessage, data: driversByNumberObject };
 };

@@ -17,7 +17,7 @@ export const Standings = () => {
       {standings.map((standing, index) => (
         <div key={standing.driverNumber} className="flex items-center gap-2">
           <div>POS {index + 1}</div>
-          <div>{driverData[standing.driverNumber]?.name_acronym}</div>
+          <div>{driverData.get(standing.driverNumber)?.name_acronym ?? 'N/A'}</div>
           <div>{standing.lapNumber}</div>
           {/* <div>{standing.lapProgress}</div> */}
         </div>

@@ -1,5 +1,7 @@
+'use server';
+
 import { z } from 'zod';
-import { BaseReturnType } from '@/lib/types/api-types';
+import { type BaseReturnType } from '@/lib/types/api-types';
 import { getApiData } from './get-api-data';
 
 const sessionResultSchema = z.object({
