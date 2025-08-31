@@ -33,7 +33,11 @@ export const PlaybackControls = () => {
   const playbackSpeeds: PlaybackSpeed[] = [1, 2, 5, 10];
 
   const playbackSpeedButtons = playbackSpeeds.map((speed) => (
-    <button key={speed} onClick={() => setPlaybackSpeed(speed)} className="rounded-md bg-info p-2 text-light">
+    <button
+      key={speed}
+      onClick={() => setPlaybackSpeed(speed)}
+      className="w-1/4 flex-grow flex-wrap rounded-md bg-info p-2 text-light"
+    >
       {speed}x
     </button>
   ));

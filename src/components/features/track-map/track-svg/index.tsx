@@ -7,7 +7,14 @@ interface TrackSvgProps {
 
 export const TrackSvg = ({ ref, children }: TrackSvgProps) => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="600" height="500" viewBox="0 0 1041.842 873.403" version="1.0">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="600"
+      height="500"
+      className="h-full w-full"
+      viewBox="0 0 1041.842 873.403"
+      version="1.0"
+    >
       <defs>
         <pattern
           patternUnits="userSpaceOnUse"
