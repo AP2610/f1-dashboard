@@ -36,7 +36,7 @@ export const useSessionTimeLineStore = create<SessionTimelineStore>((set, get) =
     set((state) => {
       const { sessionStartTime, sessionEndTime, currentTime } = state;
 
-      if (!sessionStartTime || !sessionEndTime || !currentTime) {
+      if (sessionStartTime == null || sessionEndTime == null || currentTime == null) {
         return {};
       }
 
@@ -51,24 +51,23 @@ export const useSessionTimeLineStore = create<SessionTimelineStore>((set, get) =
   tick: (deltaTime: number): boolean => {
     const { sessionStartTime, sessionEndTime, currentTime, playbackSpeed, isPlaying } = get();
 
-    if (!isPlaying || !sessionStartTime || !sessionEndTime || !currentTime) {
+    if (!isPlaying || sessionStartTime == null || sessionEndTime == null || currentTime == null) {
       return false;
     }
 
-    // Calculate where we should be after this tick
-    // Example: if deltaTime=16ms and speed=5x, we advance 80ms
     const nextTime = currentTime + deltaTime * playbackSpeed;
 
-    // Ensure the new time is within valid bounds
+    // ensure the new time is within valid bounds
     const clampedTime = Math.min(
-      // First, ensure we don't go before the race started
+      // first, ensure we don't go before the race started
       Math.max(nextTime, sessionStartTime),
-      // Then, ensure we don't go past the race ended
+      // then, ensure we don't go past the race ended
       sessionEndTime,
     );
-    const reachedEnd = currentTime === sessionEndTime;
 
     set({ currentTime: clampedTime });
+
+    const reachedEnd = clampedTime === sessionEndTime;
 
     return reachedEnd;
   },

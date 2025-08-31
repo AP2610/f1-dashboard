@@ -49,39 +49,39 @@ export const DriverMarkers = ({ pathRef, driverNumbersToShow, dotRadius = 8, sho
   const path = pathRef.current;
 
   const totalPathLength = useMemo(() => (path ? path.getTotalLength() : 0), [path]);
-  const driverNumbers = Object.keys(driverData).map(Number);
 
-  const driverList = useMemo(() => driverNumbersToShow ?? driverNumbers, [driverNumbers, driverNumbersToShow]);
+  const driverList = useMemo(() => driverNumbersToShow ?? Object.keys(driverData).map(Number), [driverData, driverNumbersToShow]);
 
   const driverMarkers = useMemo(() => {
-    const markers =
-      driverList.length > 0
-        ? driverList.map((driverNumber) => {
-            const laps = lapsByDriver[driverNumber];
+    if (!path || currentTime == null || totalPathLength === 0 || sessionStartTime == null || driverList.length === 0) {
+      return [] as DriverMarker[];
+    }
 
-            if (!laps || laps.length === 0 || currentTime === null || totalPathLength === 0 || sessionStartTime === null) {
-              return null;
-            }
+    const markers = driverList.map((driverNumber) => {
+      const laps = lapsByDriver[driverNumber];
 
-            const currentLap = findCurrentLap(currentTime, laps, sessionStartTime);
+      if (!laps || laps.length === 0) return null;
 
-            if (!currentLap) return null;
+      const currentLap = findCurrentLap(currentTime, laps, sessionStartTime);
 
-            const { point, progress, hex, label } = getMarkerDetails(
-              currentLap,
-              currentTime,
-              totalPathLength,
-              path,
-              driverData,
-              driverNumber,
-            );
+      if (!currentLap) return null;
 
-            return { driverNumber, point, progress, hex, label };
-          })
-        : [];
+      const { point, progress, hex, label } = getMarkerDetails(
+        currentLap,
+        currentTime,
+        totalPathLength,
+        path,
+        driverData,
+        driverNumber,
+      );
+
+      return { driverNumber, point, progress, hex, label };
+    });
 
     return markers;
-  }, [driverList, lapsByDriver, currentTime]).filter(Boolean) as DriverMarker[];
+  }, [driverList, lapsByDriver, currentTime, totalPathLength, sessionStartTime, driverData, path]).filter(
+    Boolean,
+  ) as DriverMarker[];
 
   if (!driverMarkers || driverMarkers.length === 0) return null;
 

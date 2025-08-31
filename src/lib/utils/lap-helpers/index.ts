@@ -1,5 +1,6 @@
 import { LapData } from '@/server-functions/api/get-session-lap-data';
 
+// returns the current lap window for a given driver. Its used to determine the current lap and lap progress.
 export const findCurrentLap = (currentTime: number, lapsByDriver: LapData[], sessionStartTime: number) => {
   for (let index = 0; index < lapsByDriver.length; index++) {
     const currentLap = lapsByDriver[index];
@@ -29,18 +30,20 @@ export const findCurrentLap = (currentTime: number, lapsByDriver: LapData[], ses
 
     const endLapTime = startLapTime + lapDuration;
 
-    // CurrentTime < endLapTime, not <= to avoid potential lap overlap issues
+    // currentTime < endLapTime, not <= to avoid potential lap overlap issues
     if (currentTime >= startLapTime && currentTime < endLapTime) {
-      return { startLapTime, endLapTime, lapDuration, lapNumber: currentLap.lap_number };
+      return { startLapTime, lapDuration, lapNumber: currentLap.lap_number };
     }
   }
   return null;
 };
 
-//  Returns the drivers position along the lap as a number between 0-1
 export const getDriverLapProgress = (startLapTime: number, lapDuration: number, currentTime: number) => {
-  const progress = (currentTime - startLapTime) / lapDuration;
+  const timePassedSinceStartOfLap = currentTime - startLapTime;
+  const totalTimeForLap = lapDuration;
 
-  // Clamp the progress between 0 and 1
-  return Math.max(0, Math.min(1, progress));
+  const progressAlongCurrentLap = timePassedSinceStartOfLap / totalTimeForLap;
+
+  // i'm using the clamp here just for edge cases, 99% of the time the value will be between 0-1, but just in case/
+  return Math.max(0, Math.min(1, progressAlongCurrentLap));
 };

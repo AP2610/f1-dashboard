@@ -26,15 +26,15 @@ export function useCurrentLapNumber(sessionStartTime: number) {
     const lapsForDriver = lapsByDriver[driverNumber];
     if (!lapsForDriver || lapsForDriver.length === 0) continue;
 
-    const window = findCurrentLap(currentTime, lapsForDriver, sessionStartTime);
-    if (!window) continue;
+    const currentLap = findCurrentLap(currentTime, lapsForDriver, sessionStartTime);
+    if (!currentLap) continue;
 
     // Get the progress of the current lap to sort standings
-    const lapProgress = getDriverLapProgress(window.startLapTime, window.lapDuration, currentTime);
+    const lapProgress = getDriverLapProgress(currentLap.startLapTime, currentLap.lapDuration, currentTime);
 
     standings.push({
       driverNumber,
-      lapNumber: window.lapNumber,
+      lapNumber: currentLap.lapNumber,
       lapProgress,
     });
   }
