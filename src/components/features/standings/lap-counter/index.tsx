@@ -1,6 +1,6 @@
 'use client';
 
-import { useCurrentLapNumber } from '@/hooks/use-current-lap-number';
+import { useStandings } from '@/hooks/use-standings';
 import { useSessionTimeLineStore } from '@/lib/stores/session-timeline-store';
 
 interface LapCounterProps {
@@ -9,8 +9,7 @@ interface LapCounterProps {
 
 export function LapCounter({ totalLaps = 72 }: LapCounterProps) {
   const currentTime = useSessionTimeLineStore((state) => state.currentTime);
-  const sessionStartTime = useSessionTimeLineStore((state) => state.sessionStartTime);
-  const { currentLapNumber } = useCurrentLapNumber(sessionStartTime ?? 0);
+  const { currentLapNumber } = useStandings();
 
   if (currentTime == null) return null;
 

@@ -7,13 +7,16 @@ import { CONSTANTS } from '@/lib/constants';
 import { getSessionData } from '@/server-functions/api/get-session-data';
 import { getSessionDriverData } from '@/server-functions/api/get-session-driver-data';
 import { getSessionLapData } from '@/server-functions/api/get-session-lap-data';
+import { getSessionResult } from '@/server-functions/api/get-session-result';
 
 const Home = async () => {
   const sessionData = await getSessionData(CONSTANTS.raceSessionKey);
   const sessionDriverData = await getSessionDriverData(CONSTANTS.raceSessionKey);
   const sessionLapData = await getSessionLapData(CONSTANTS.raceSessionKey, 25);
+  const qualifyingSessionResultData = await getSessionResult(CONSTANTS.quallifyingSessionKey);
+  console.log('driverData-page: ', sessionDriverData);
 
-  if (sessionData.hasError || sessionDriverData.hasError || sessionLapData.hasError) {
+  if (sessionData.hasError || sessionDriverData.hasError || sessionLapData.hasError || qualifyingSessionResultData.hasError) {
     return (
       <div className="p-6">
         <h1>Couldn’t load data</h1>
@@ -31,6 +34,7 @@ const Home = async () => {
         sessionEndTime={sessionData.data!.date_end!}
         sessionDriverData={sessionDriverData.data!}
         initialLapsByDriver={sessionLapData.data!}
+        qualifyingPositionData={qualifyingSessionResultData.data!}
       />
 
       <Section isFullWidth className="grid grid-cols-12 gap-8">
