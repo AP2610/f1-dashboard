@@ -1,3 +1,5 @@
+'use client';
+
 import { useSessionTimeLineStore } from '@/lib/stores/session-timeline-store';
 import { useEffect, useRef } from 'react';
 
@@ -6,8 +8,8 @@ export const useRacePlayback = () => {
   const animationFrameId = useRef<number | null>(null);
   const lastTimestamp = useRef<number | null>(null);
 
-  const tick = useSessionTimeLineStore((state) => state.tick);
-  const setIsPlaying = useSessionTimeLineStore((state) => state.setIsPlaying);
+  // Avoid subscribing to the store to prevent rerendering when state changes, therefore using getState()
+  const { tick, setIsPlaying } = useSessionTimeLineStore.getState();
 
   // The loop function that is called on every animation frame
   const loop = (timestamp: number) => {
@@ -15,18 +17,30 @@ export const useRacePlayback = () => {
       lastTimestamp.current = timestamp;
     }
 
-    // Calculate the delta time between the current timestamp and the last timestamp which is when the last frame was rendered
+    // i'm using deltaTime to calculate the amount of time that has passed since the last frame was rendered, then multiplying it by the playback speed to get the amount of time that has passed since the last frame was rendered.
     const deltaTime = timestamp - lastTimestamp.current;
 
     // set the last timestamp to the current timestamp so we can calculate the delta time in the next frame
     lastTimestamp.current = timestamp;
 
-    tick(deltaTime);
+    const reachedEnd = tick(deltaTime);
+
+    // Make sure that we don't continue the animation if the race has reached the end
+    if (reachedEnd && animationFrameId.current !== null) {
+      cancelAnimationFrame(animationFrameId.current);
+
+      animationFrameId.current = null;
+      lastTimestamp.current = null;
+
+      setIsPlaying(false);
+
+      return;
+    }
 
     animationFrameId.current = requestAnimationFrame(loop);
   };
 
-  // Cleanup the animation frame when the component unmounts
+  // Cleanup the animation when the component unmounts
   useEffect(() => {
     return () => {
       if (animationFrameId.current) {
@@ -35,11 +49,11 @@ export const useRacePlayback = () => {
     };
   }, []);
 
-  // TODO: Add pause
-
   const start = () => {
-    // Reset the last timestamp to start the loop from the beginning
+    if (animationFrameId.current != null) return;
+
     setIsPlaying(true);
+    // Reset the last timestamp to start the loop from the beginning
     lastTimestamp.current = null;
     animationFrameId.current = requestAnimationFrame(loop);
   };

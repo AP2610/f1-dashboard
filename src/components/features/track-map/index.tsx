@@ -5,13 +5,12 @@ import { TrackSvg } from './track-svg';
 interface TrackMapProps {
   trackRef: React.RefObject<SVGPathElement>;
   sessionDriverData: DriverDataMap;
-  sessionStartTime: number;
 }
 
-export const TrackMap = ({ trackRef, sessionDriverData, sessionStartTime }: TrackMapProps) => {
+export const TrackMap = ({ trackRef, sessionDriverData }: TrackMapProps) => {
   return (
     <TrackSvg ref={trackRef}>
-      <DriverMarkers pathRef={trackRef} drivers={sessionDriverData} sessionStartTime={sessionStartTime} />
+      <DriverMarkers pathRef={trackRef} drivers={sessionDriverData} />
     </TrackSvg>
   );
 };

@@ -7,16 +7,15 @@ export const PlaybackControls = () => {
   const racePlayback = useRacePlayback();
   const setSession = useSessionTimeLineStore((state) => state.setSession);
   const setPlaybackSpeed = useSessionTimeLineStore((state) => state.setPlaybackSpeed);
+  const isPlaying = useSessionTimeLineStore((state) => state.isPlaying);
   const sessionStartTime = useSessionTimeLineStore((state) => state.sessionStartTime);
   const sessionEndTime = useSessionTimeLineStore((state) => state.sessionEndTime);
 
   const handleStartClick = () => {
-    console.log('handleStartClick');
     racePlayback.start();
   };
 
   const handlePauseClick = () => {
-    console.log('handleStopClick');
     racePlayback.stop();
   };
 
@@ -44,15 +43,27 @@ export const PlaybackControls = () => {
 
   return (
     <>
-      <button onClick={handleStartClick} className="rounded-md bg-success p-2 text-light">
+      <button
+        onClick={handleStartClick}
+        disabled={isPlaying}
+        className="rounded-md bg-success p-2 text-light disabled:bg-success/50"
+      >
         Start
       </button>
 
-      <button onClick={handlePauseClick} className="rounded-md bg-accent p-2 text-dark">
+      <button
+        onClick={handlePauseClick}
+        disabled={!isPlaying}
+        className="rounded-md bg-accent p-2 text-dark disabled:bg-accent/50"
+      >
         Pause
       </button>
 
-      <button onClick={handleResetSessionClick} className="rounded-md bg-error p-2 text-light">
+      <button
+        onClick={handleResetSessionClick}
+        disabled={!isPlaying}
+        className="rounded-md bg-error p-2 text-light disabled:bg-error/50"
+      >
         Reset Session
       </button>
 

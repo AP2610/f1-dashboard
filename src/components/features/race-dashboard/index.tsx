@@ -59,11 +59,7 @@ export const RaceDashboard = ({
           </div>
 
           <div className="col-span-9 mx-auto">
-            <TrackMap
-              trackRef={trackRef as React.RefObject<SVGPathElement>}
-              sessionDriverData={sessionDriverData}
-              sessionStartTime={sessionStartTime}
-            />
+            <TrackMap trackRef={trackRef as React.RefObject<SVGPathElement>} sessionDriverData={sessionDriverData} />
           </div>
         </div>
       </div>

@@ -13,17 +13,16 @@ interface SessionTimelineStore {
   setPlaybackSpeed: (playbackSpeed: PlaybackSpeed) => void;
   setIsPlaying: (isPlaying: boolean) => void;
   seek: (timeToSeekTo: number) => void;
-  tick: (deltaTime: number) => void;
+  tick: (deltaTime: number) => boolean;
 }
 
-// The store controls the playback of a session
-export const useSessionTimeLineStore = create<SessionTimelineStore>((set) => ({
+export const useSessionTimeLineStore = create<SessionTimelineStore>((set, get) => ({
   raceSessionKey: null,
   sessionStartTime: null,
   sessionEndTime: null,
-  currentTime: null,
+  currentTime: null, // I'm using currentTime to track where the "playhead" is in the race timeline.
   playbackSpeed: 1,
-  isPlaying: false,
+  isPlaying: false, // I'm currently only using this for the playback controls disabled state, might use for animations in the future.
 
   // Setters
   setSession: (raceSessionKey: number, sessionStartTime: number, sessionEndTime: number, currentTime: number) =>
@@ -48,26 +47,28 @@ export const useSessionTimeLineStore = create<SessionTimelineStore>((set) => ({
       };
     }),
 
-  tick: (deltaTime: number) =>
-    set((state) => {
-      const { sessionStartTime, sessionEndTime, currentTime, playbackSpeed, isPlaying } = state;
+  tick: (deltaTime: number): boolean => {
+    const { sessionStartTime, sessionEndTime, currentTime, playbackSpeed, isPlaying } = get();
 
-      if (!isPlaying || !sessionStartTime || !sessionEndTime || !currentTime) {
-        return {}; // No state change - currentTime stays the same
-      }
+    if (!isPlaying || !sessionStartTime || !sessionEndTime || !currentTime) {
+      return false;
+    }
 
-      // Calculate where we should be after this tick
-      // Example: if deltaTime=16ms and speed=5x, we advance 80ms
-      const nextTime = currentTime + deltaTime * playbackSpeed;
+    // Calculate where we should be after this tick
+    // Example: if deltaTime=16ms and speed=5x, we advance 80ms
+    const nextTime = currentTime + deltaTime * playbackSpeed;
 
-      // Ensure the new time is within valid bounds
-      return {
-        currentTime: Math.min(
-          // First, ensure we don't go before the race started
-          Math.max(nextTime, sessionStartTime),
-          // Then, ensure we don't go past the race ended
-          sessionEndTime,
-        ),
-      };
-    }),
+    // Ensure the new time is within valid bounds
+    const clampedTime = Math.min(
+      // First, ensure we don't go before the race started
+      Math.max(nextTime, sessionStartTime),
+      // Then, ensure we don't go past the race ended
+      sessionEndTime,
+    );
+    const reachedEnd = currentTime === sessionEndTime;
+
+    set({ currentTime: clampedTime });
+
+    return reachedEnd;
+  },
 }));

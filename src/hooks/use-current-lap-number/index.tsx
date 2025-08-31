@@ -14,7 +14,7 @@ export function useCurrentLapNumber(sessionStartTime: number) {
   const currentTime = useSessionTimeLineStore((state) => state.currentTime);
   const lapsByDriver = useLapsStore((state) => state.lapsByDriver);
 
-  if (!currentTime || !lapsByDriver) {
+  if (currentTime == null || lapsByDriver == null) {
     return { currentLapNumber: null };
   }
 
