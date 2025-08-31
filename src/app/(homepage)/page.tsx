@@ -3,14 +3,12 @@ import { getSessionDriverData } from '@/server-functions/api/get-session-driver-
 import { getSessionLapData } from '@/server-functions/api/get-session-lap-data';
 import { getSessionData } from '@/server-functions/api/get-session-data';
 import { RaceDashboard } from '@/components/features/race-dashboard';
+import { SessionInitialiser } from '@/components/features/session-initialiser';
 
 const Home = async () => {
   const sessionData = await getSessionData(CONSTANTS.raceSessionKey);
   const sessionDriverData = await getSessionDriverData(CONSTANTS.raceSessionKey);
   const sessionLapData = await getSessionLapData(CONSTANTS.raceSessionKey, 25);
-  console.log('sessionData: ', sessionData);
-  console.log('sessionDriverData: ', sessionDriverData);
-  console.log('sessionLapData: ', sessionLapData);
 
   if (sessionData.hasError || sessionDriverData.hasError || sessionLapData.hasError) {
     return (
@@ -23,8 +21,16 @@ const Home = async () => {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-16 p-8">
+      {/* Component returns nothing, just inits the session and laps in the stores */}
+      <SessionInitialiser
+        sessionStartTime={sessionData.data!.date_start!}
+        initialCurrentTime={sessionData.data!.date_start!}
+        sessionEndTime={sessionData.data!.date_end!}
+        initialLapsByDriver={sessionLapData.data!}
+      />
+
       <RaceDashboard
-        // Safe non-null assertion because we know the data is not null due to error checking above
+        // safe non-null assertion because we know the data is not null due to error checking above
         sessionStartTime={sessionData.data!.date_start!}
         sessionEndTime={sessionData.data!.date_end!}
         sessionDriverData={sessionDriverData.data!}

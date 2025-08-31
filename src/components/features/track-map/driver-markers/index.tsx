@@ -94,7 +94,7 @@ export const DriverMarkers = ({
     <>
       {driverMarkers.toReversed().map((driverMarker) => (
         <g key={driverMarker.driverNumber} transform={`translate(${driverMarker.point.x}, ${driverMarker.point.y})`}>
-          <circle r={dotRadius} strokeWidth={1} style={{ fill: driverMarker.hex }} className="stroke-light" />
+          <circle r={dotRadius} strokeWidth={1} style={{ fill: driverMarker.hex }} className="stroke-white" />
 
           {showLabels && (
             <>
@@ -107,7 +107,7 @@ export const DriverMarkers = ({
                 rx={2} // rounded corners
               />
 
-              <text fontWeight="bold" x={dotRadius + 8} y={4} fontSize={14} className="fill-light">
+              <text fontWeight="bold" x={dotRadius + 8} y={4} fontSize={14} className="fill-white">
                 {driverMarker.label}
               </text>
             </>

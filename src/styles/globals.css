@@ -4,25 +4,16 @@
   --color-*: initial;
 
   /* Colors */
-
-  /* F1 Track & Safety Colors */
-  --color-track-gray: rgba(64, 64, 64, 1); /* Track Surface */
-  --color-kerb-yellow: rgba(255, 255, 0, 1); /* Kerb Stripe */
-  --color-kerb-red: rgba(255, 0, 0, 1); /* Red Kerb */
-  --color-safety-yellow: rgba(255, 255, 0, 1); /* Safety Car Yellow */
-  --color-safety-blue: rgba(0, 150, 255, 1); /* Blue Flag Blue */
-  --color-checkered-black: rgba(0, 0, 0, 1); /* Checkered Flag */
-  --color-checkered-white: rgba(255, 255, 255, 1); /* Checkered Flag */
-
-  /* F1 UI Colors */
-  --color-dark: rgba(18, 18, 18, 1); /* F1 Dark Background */
-  --color-darker: rgba(12, 12, 12, 1); /* F1 Darker Background */
-  --color-light: rgba(245, 245, 245, 1); /* F1 Light Text */
-  --color-accent: rgba(255, 215, 0, 1); /* F1 Accent (Yellow) */
-  --color-success: rgba(0, 150, 57, 1); /* F1 Success (Green) */
-  --color-warning: rgba(255, 69, 0, 1); /* F1 Warning (Orange) */
-  --color-error: rgba(220, 0, 0, 1); /* F1 Error (Red) */
-  --color-info: rgba(0, 150, 255, 1);
+  --color-blue-black: rgba(4, 7, 32, 1);
+  --color-gray: rgba(64, 64, 64, 1);
+  --color-onyx: rgba(53, 57, 53, 1);
+  --color-bright-yellow: rgba(255, 255, 0, 1);
+  --color-blue: rgba(0, 150, 255, 1);
+  --color-black: rgba(0, 0, 0, 1);
+  --color-white: rgba(245, 245, 245, 1);
+  --color-deep-yellow: rgba(255, 215, 0, 1);
+  --color-green: rgba(0, 132, 80, 1);
+  --color-red: rgba(255, 69, 0, 1);
 
   /* Fonts */
   --font-raleway: var(--font-raleway);
@@ -30,8 +21,18 @@
 }
 
 @theme inline {
-  --color-background: var(--color-dark);
-  --color-foreground: var(--color-light);
+  /* Semantic colors */
+  --color-background: var(--color-blue-black);
+  --color-foreground: var(--color-white);
+
+  --color-track: var(--color-onyx);
+  --color-checkered-black: var(--color-black);
+  --color-checkered-white: var(--color-white);
+
+  --color-primary: var(--color-green);
+  --color-secondary: var(--color-deep-yellow);
+  --color-tertiary: var(--color-red);
+  --color-accent-1: var(--color-blue);
 }
 
 @layer utilities {

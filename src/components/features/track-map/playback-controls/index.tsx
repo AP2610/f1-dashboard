@@ -35,7 +35,7 @@ export const PlaybackControls = () => {
     <button
       key={speed}
       onClick={() => setPlaybackSpeed(speed)}
-      className="w-1/4 flex-grow flex-wrap rounded-md bg-info p-2 text-light"
+      className="w-1/4 flex-grow flex-wrap rounded-md bg-accent-1 p-2 text-white"
     >
       {speed}x
     </button>
@@ -46,7 +46,7 @@ export const PlaybackControls = () => {
       <button
         onClick={handleStartClick}
         disabled={isPlaying}
-        className="rounded-md bg-success p-2 text-light disabled:bg-success/50"
+        className="rounded-md bg-primary p-2 text-white disabled:bg-primary/50"
       >
         Start
       </button>
@@ -54,7 +54,7 @@ export const PlaybackControls = () => {
       <button
         onClick={handlePauseClick}
         disabled={!isPlaying}
-        className="rounded-md bg-accent p-2 text-dark disabled:bg-accent/50"
+        className="text-dark rounded-md bg-secondary p-2 disabled:bg-secondary/50"
       >
         Pause
       </button>
@@ -62,7 +62,7 @@ export const PlaybackControls = () => {
       <button
         onClick={handleResetSessionClick}
         disabled={!isPlaying}
-        className="rounded-md bg-error p-2 text-light disabled:bg-error/50"
+        className="rounded-md bg-tertiary p-2 text-white disabled:bg-tertiary/50"
       >
         Reset Session
       </button>
