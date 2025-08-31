@@ -5,12 +5,12 @@ import { useSessionTimeLineStore } from '@/lib/stores/session-timeline-store';
 
 interface LapCounterProps {
   totalLaps?: number;
-  sessionStartTime: number;
 }
 
-export function LapCounter({ totalLaps = 72, sessionStartTime }: LapCounterProps) {
-  const currentTime = useSessionTimeLineStore((s) => s.currentTime);
-  const { currentLapNumber } = useCurrentLapNumber(sessionStartTime);
+export function LapCounter({ totalLaps = 72 }: LapCounterProps) {
+  const currentTime = useSessionTimeLineStore((state) => state.currentTime);
+  const sessionStartTime = useSessionTimeLineStore((state) => state.sessionStartTime);
+  const { currentLapNumber } = useCurrentLapNumber(sessionStartTime ?? 0);
 
   if (currentTime == null) return null;
 

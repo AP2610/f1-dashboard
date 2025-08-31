@@ -1,16 +1,15 @@
-import { type DriverDataMap } from '@/server-functions/api/get-session-driver-data';
+'use client';
+
 import { DriverMarkers } from './driver-markers';
 import { TrackSvg } from './track-svg';
+import { useRef } from 'react';
 
-interface TrackMapProps {
-  trackRef: React.RefObject<SVGPathElement>;
-  sessionDriverData: DriverDataMap;
-}
+export const TrackMap = () => {
+  const trackRef = useRef<SVGPathElement | null>(null);
 
-export const TrackMap = ({ trackRef, sessionDriverData }: TrackMapProps) => {
   return (
-    <TrackSvg ref={trackRef}>
-      <DriverMarkers pathRef={trackRef} drivers={sessionDriverData} />
+    <TrackSvg ref={trackRef as React.RefObject<SVGPathElement>}>
+      <DriverMarkers pathRef={trackRef as React.RefObject<SVGPathElement>} />
     </TrackSvg>
   );
 };

@@ -1,17 +1,18 @@
 'use client';
 
 import { useSessionTimeLineStore } from '@/lib/stores/session-timeline-store';
-import { DriverDataMap } from '@/server-functions/api/get-session-driver-data';
 import { findCurrentLap, getDriverLapProgress } from '@/lib/utils/lap-helpers';
 import { useMemo } from 'react';
 import { useLapsStore } from '@/lib/stores/laps-store';
+import { useDriverStore } from '@/lib/stores/driver-store';
+import { DriverDataMap } from '@/server-functions/api/get-session-driver-data';
 
 const getMarkerDetails = (
   currentLap: ReturnType<typeof findCurrentLap>,
   currentTime: number,
   totalPathLength: number,
   path: SVGPathElement,
-  drivers: DriverDataMap,
+  driverData: DriverDataMap,
   driverNumber: number,
 ) => {
   const progress = getDriverLapProgress(currentLap!.startLapTime, currentLap!.lapDuration, currentTime);
@@ -19,8 +20,8 @@ const getMarkerDetails = (
 
   // Returns x, y for a point on the path at a certain distance along the path
   const point = path.getPointAtLength(distance);
-  const hex = `#${drivers[driverNumber].team_colour ?? '000'}`;
-  const label = drivers[driverNumber].name_acronym;
+  const hex = `#${driverData[driverNumber].team_colour ?? '000'}`;
+  const label = driverData[driverNumber].name_acronym;
 
   return { driverNumber, point, progress, hex, label };
 };
@@ -35,26 +36,20 @@ type DriverMarker = {
 
 interface DriverMarkerOverlayProps {
   pathRef: React.RefObject<SVGPathElement>;
-  drivers: DriverDataMap;
   driverNumbersToShow?: number[];
   dotRadius?: number;
   showLabels?: boolean;
 }
 
-export const DriverMarkers = ({
-  pathRef,
-  drivers,
-  driverNumbersToShow,
-  dotRadius = 8,
-  showLabels = true,
-}: DriverMarkerOverlayProps) => {
+export const DriverMarkers = ({ pathRef, driverNumbersToShow, dotRadius = 8, showLabels = true }: DriverMarkerOverlayProps) => {
   const currentTime = useSessionTimeLineStore((state) => state.currentTime);
   const sessionStartTime = useSessionTimeLineStore((state) => state.sessionStartTime);
   const lapsByDriver = useLapsStore((state) => state.lapsByDriver);
+  const driverData = useDriverStore((state) => state.driverData);
   const path = pathRef.current;
 
   const totalPathLength = useMemo(() => (path ? path.getTotalLength() : 0), [path]);
-  const driverNumbers = Object.keys(drivers).map(Number);
+  const driverNumbers = Object.keys(driverData).map(Number);
 
   const driverList = useMemo(() => driverNumbersToShow ?? driverNumbers, [driverNumbers, driverNumbersToShow]);
 
@@ -77,7 +72,7 @@ export const DriverMarkers = ({
               currentTime,
               totalPathLength,
               path,
-              drivers,
+              driverData,
               driverNumber,
             );
 

@@ -1,5 +1,6 @@
+'use client';
+
 import { CONSTANTS } from '@/lib/constants';
-import { PlaybackSpeed } from '@/lib/stores/session-timeline-store';
 import { useRacePlayback } from '@/hooks/use-race-playback';
 import { useSessionTimeLineStore } from '@/lib/stores/session-timeline-store';
 
@@ -29,7 +30,7 @@ export const PlaybackControls = () => {
     setPlaybackSpeed(1);
   };
 
-  const playbackSpeeds: PlaybackSpeed[] = [1, 2, 5, 10];
+  const playbackSpeeds = CONSTANTS.playbackSpeeds;
 
   const playbackSpeedButtons = playbackSpeeds.map((speed) => (
     <button

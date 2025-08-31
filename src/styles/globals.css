@@ -5,8 +5,8 @@
 
   /* Colors */
   --color-blue-black: rgba(4, 7, 32, 1);
-  --color-gray: rgba(64, 64, 64, 1);
-  --color-onyx: rgba(53, 57, 53, 1);
+  --color-light-gray: rgba(211, 211, 211, 1);
+  --color-gray: rgba(53, 57, 53, 1);
   --color-bright-yellow: rgba(255, 255, 0, 1);
   --color-blue: rgba(0, 150, 255, 1);
   --color-black: rgba(0, 0, 0, 1);
@@ -25,7 +25,9 @@
   --color-background: var(--color-blue-black);
   --color-foreground: var(--color-white);
 
-  --color-track: var(--color-onyx);
+  --color-track: var(--color-gray);
+  --color-track-border: var(--color-light-gray);
+  --color-pitlane: var(--color-deep-yellow);
   --color-checkered-black: var(--color-black);
   --color-checkered-white: var(--color-white);
 

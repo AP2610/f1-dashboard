@@ -1,6 +1,7 @@
 import { create } from 'zustand';
+import { CONSTANTS } from '../constants';
 
-export type PlaybackSpeed = 1 | 2 | 5 | 10;
+type PlaybackSpeed = (typeof CONSTANTS.playbackSpeeds)[number];
 
 interface SessionTimelineStore {
   raceSessionKey: number | null;
