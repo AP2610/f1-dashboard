@@ -38,7 +38,7 @@ const Home = async () => {
     <div className="flex min-h-screen flex-col items-center justify-center gap-16 p-8">
       {/* Component returns nothing, just inits the session, driver data and laps in the stores */}
       <SessionInitialiser
-        sessionStartTime={sessionData.data!.date_start!}
+        sessionStartTimeMs={sessionData.data!.date_start!}
         initialCurrentTime={sessionData.data!.date_start!}
         sessionEndTime={sessionData.data!.date_end!}
         sessionDriverDataWithQualifying={sessionDriverDataWithQualifying.data!}

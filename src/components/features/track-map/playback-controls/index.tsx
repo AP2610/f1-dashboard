@@ -6,7 +6,7 @@ import { useSessionTimeLineStore } from '@/lib/stores/session-timeline-store';
 
 export const PlaybackControls = () => {
   const racePlayback = useRacePlayback();
-  const sessionStartTime = useSessionTimeLineStore((state) => state.sessionStartTime);
+  const sessionStartTimeMs = useSessionTimeLineStore((state) => state.sessionStartTimeMs);
   const sessionEndTime = useSessionTimeLineStore((state) => state.sessionEndTime);
   const isPlaying = useSessionTimeLineStore((state) => state.isPlaying);
   const setSession = useSessionTimeLineStore((state) => state.setSession);
@@ -21,11 +21,11 @@ export const PlaybackControls = () => {
   };
 
   const handleResetSessionClick = () => {
-    if (sessionStartTime === null || sessionEndTime === null) {
+    if (sessionStartTimeMs === null || sessionEndTime === null) {
       return;
     }
 
-    setSession(CONSTANTS.raceSessionKey, sessionStartTime, sessionEndTime, sessionStartTime);
+    setSession(CONSTANTS.raceSessionKey, sessionStartTimeMs, sessionEndTime, sessionStartTimeMs);
     racePlayback.stop();
     setPlaybackSpeed(1);
   };

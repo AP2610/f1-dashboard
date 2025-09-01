@@ -10,7 +10,7 @@ import { type SessionResult } from '@/server-functions/api/get-session-result';
 import { useEffect } from 'react';
 
 interface SessionInitialiserProps {
-  sessionStartTime: number;
+  sessionStartTimeMs: number;
   initialCurrentTime: number;
   sessionEndTime: number;
   sessionDriverDataWithQualifying: DriverDataMapWithQualifyingPosition;
@@ -19,7 +19,7 @@ interface SessionInitialiserProps {
 }
 
 export const SessionInitialiser = ({
-  sessionStartTime,
+  sessionStartTimeMs,
   initialCurrentTime,
   sessionEndTime,
   sessionDriverDataWithQualifying,
@@ -31,10 +31,10 @@ export const SessionInitialiser = ({
   const setDriverData = useDriverStore((state) => state.setDriverData);
 
   useEffect(() => {
-    setSession(CONSTANTS.raceSessionKey, sessionStartTime, sessionEndTime, initialCurrentTime);
+    setSession(CONSTANTS.raceSessionKey, sessionStartTimeMs, sessionEndTime, initialCurrentTime);
     setLapsByDriver(initialLapsByDriver);
     setDriverData(sessionDriverDataWithQualifying);
-  }, [sessionStartTime, sessionEndTime, sessionDriverDataWithQualifying, initialLapsByDriver, qualifyingPositionData]);
+  }, [sessionStartTimeMs, sessionEndTime, sessionDriverDataWithQualifying, initialLapsByDriver, qualifyingPositionData]);
 
   return null;
 };

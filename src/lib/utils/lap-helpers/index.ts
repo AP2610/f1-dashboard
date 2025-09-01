@@ -1,18 +1,28 @@
 import { LapData } from '@/server-functions/api/get-laps-for-driver-data';
 
-// returns the current lap window for a given driver. Its used to determine the current lap and lap progress.
-export const findCurrentLap = (currentTime: number, lapsByDriver: LapData[], sessionStartTime: number) => {
-  for (let index = 0; index < lapsByDriver.length; index++) {
-    const currentLap = lapsByDriver[index];
-    const nextLap = lapsByDriver[index + 1];
+type ActiveLapWindow = {
+  startLapTimeMs: number;
+  lapDurationMs: number;
+  lapNumber: number;
+};
 
-    let lapDuration: number | null;
-    let startLapTime: number | null;
+// returns the current lap window for a given driver. Its used to determine the current lap and lap progress.
+export const getActiveLapWindow = (
+  playheadMs: number,
+  driverLaps: LapData[],
+  sessionStartTimeMsMs: number,
+): ActiveLapWindow | null => {
+  for (let index = 0; index < driverLaps.length; index++) {
+    const currentLap = driverLaps[index];
+    const nextLap = driverLaps[index + 1];
+
+    let lapDurationMs: number | null;
+    let startLapTimeMs: number | null;
 
     if (currentLap.date_start != null && currentLap.date_start !== undefined) {
-      startLapTime = currentLap.date_start;
+      startLapTimeMs = currentLap.date_start;
     } else if (currentLap.lap_number === 1) {
-      startLapTime = sessionStartTime;
+      startLapTimeMs = sessionStartTimeMsMs;
     } else {
       // Skip this lap because we dont have a start lap time
       continue;
@@ -20,26 +30,30 @@ export const findCurrentLap = (currentTime: number, lapsByDriver: LapData[], ses
 
     // If the lap number is 1 and the next lap has a date start, then the lap duration is the difference between the next lap's date start and the start lap time
     if (currentLap.lap_number === 1 && nextLap && nextLap.date_start !== null && nextLap.date_start !== undefined) {
-      lapDuration = nextLap.date_start - startLapTime;
+      lapDurationMs = nextLap.date_start - startLapTimeMs;
     } else {
-      lapDuration = currentLap.lap_duration ?? 0;
+      lapDurationMs = currentLap.lap_duration ?? 0;
     }
 
     // If the lap duration is null or less than 0, dont render this lap for the given driver
-    if (lapDuration == null || lapDuration <= 0) continue;
+    if (lapDurationMs == null || lapDurationMs <= 0) continue;
 
-    const endLapTime = startLapTime + lapDuration;
+    const endLapTime = startLapTimeMs + lapDurationMs;
 
-    // currentTime < endLapTime, not <= to avoid potential lap overlap issues
-    if (currentTime >= startLapTime && currentTime < endLapTime) {
-      return { startLapTime, lapDuration, lapNumber: currentLap.lap_number };
+    /**
+     * playheadMs < endLapTime, not <= to avoid potential lap overlap issues
+     * for example: Lap 1 runs from 100s to 180s. Lap 2 starts at 180s.
+     * At 180s, we don’t want that moment to count for both laps.
+     */
+    if (playheadMs >= startLapTimeMs && playheadMs < endLapTime) {
+      return { startLapTimeMs, lapDurationMs, lapNumber: currentLap.lap_number };
     }
   }
   return null;
 };
 
-export const getDriverLapProgress = (startLapTime: number, lapDuration: number, currentTime: number) => {
-  const timePassedSinceStartOfLap = currentTime - startLapTime;
+export const getDriverLapProgress = (startLapTimeMs: number, lapDuration: number, playheadMs: number) => {
+  const timePassedSinceStartOfLap = playheadMs - startLapTimeMs;
   const totalTimeForLap = lapDuration;
 
   const progressAlongCurrentLap = timePassedSinceStartOfLap / totalTimeForLap;

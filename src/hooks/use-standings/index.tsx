@@ -1,9 +1,9 @@
 'use client';
 
-import { useSessionTimeLineStore } from '@/lib/stores/session-timeline-store';
-import { findCurrentLap, getDriverLapProgress } from '@/lib/utils/lap-helpers';
-import { useLapsStore } from '@/lib/stores/laps-store';
 import { useDriverStore } from '@/lib/stores/driver-store';
+import { useLapsStore } from '@/lib/stores/laps-store';
+import { useSessionTimeLineStore } from '@/lib/stores/session-timeline-store';
+import { getActiveLapWindow, getDriverLapProgress } from '@/lib/utils/lap-helpers';
 import { useRef } from 'react';
 
 type StandingsEntry = {
@@ -15,24 +15,24 @@ type StandingsEntry = {
 
 export function useStandings() {
   const isPlaying = useSessionTimeLineStore((state) => state.isPlaying);
-  const currentTime = useSessionTimeLineStore((state) => state.currentTime);
-  const sessionStartTime = useSessionTimeLineStore((state) => state.sessionStartTime);
+  const playheadMs = useSessionTimeLineStore((state) => state.playheadMs);
+  const sessionStartTimeMs = useSessionTimeLineStore((state) => state.sessionStartTimeMs);
 
-  const lapsByDriver = useLapsStore((state) => state.lapsByDriver);
+  const driverLaps = useLapsStore((state) => state.driverLaps);
   const driverData = useDriverStore((state) => state.driverData);
 
   // always keep a copy of the previous standings to return in the edge cases where standings is empty
   const previousStandings = useRef<StandingsEntry[]>([]);
   const previousLeaderLapNumber = useRef<number | null>(null);
 
-  const totalLaps = lapsByDriver.get(1)?.length ?? 0;
+  const totalLaps = driverLaps.get(1)?.length ?? 0;
 
-  if (currentTime === null || lapsByDriver === null || sessionStartTime === null) {
+  if (playheadMs === null || driverLaps === null || sessionStartTimeMs === null) {
     return { standings: previousStandings.current, currentLapNumber: previousLeaderLapNumber.current, totalLaps };
   }
 
   // if true, we'll use the quali grid to display standings
-  const isPreRaceStart = !isPlaying && currentTime < sessionStartTime;
+  const isPreRaceStart = !isPlaying && playheadMs < sessionStartTimeMs;
 
   if (isPreRaceStart) {
     const standings = Array.from(driverData.entries()).map(([driverNumber, data], idx) => ({
@@ -48,32 +48,36 @@ export function useStandings() {
 
   const standings: StandingsEntry[] = [];
 
-  // Map previous standings by driver for quick per-driver fallback
-  const previousByDriver = new Map(previousStandings.current.map((standing) => [standing.driverNumber, standing] as const));
+  // map previous standings by driver to derive the last known standing for each driver
+  const previousStandingsByDriver = new Map(
+    previousStandings.current.map((standing) => [standing.driverNumber, standing] as const),
+  );
 
   // live standings
-  for (const [driverNumber, lapsForDriver] of lapsByDriver.entries()) {
+  for (const [driverNumber, lapsForDriver] of driverLaps.entries()) {
     if (!lapsForDriver || lapsForDriver.length === 0) continue;
 
-    const currentLap = findCurrentLap(currentTime, lapsForDriver, sessionStartTime);
+    const currentLap = getActiveLapWindow(playheadMs, lapsForDriver, sessionStartTimeMs);
     const driver = driverData.get(driverNumber);
+
     if (!driver) continue; // skip if driver is not in data
 
     if (!currentLap) {
-      // keep last known row for this driver instead of dropping them for this frame
-      const prev = previousByDriver.get(driverNumber);
-      if (prev) {
+      // keep last known standing for this driver instead of dropping them for this frame
+      const driverPreviousStanding = previousStandingsByDriver.get(driverNumber);
+
+      if (driverPreviousStanding) {
         standings.push({
           driverNumber,
-          lapNumber: prev.lapNumber,
-          lapProgress: prev.lapProgress,
+          lapNumber: driverPreviousStanding.lapNumber,
+          lapProgress: driverPreviousStanding.lapProgress,
           qualifyingPosition: driver.qualifyingPosition,
         });
       }
       continue;
     }
 
-    const lapProgress = getDriverLapProgress(currentLap.startLapTime, currentLap.lapDuration, currentTime);
+    const lapProgress = getDriverLapProgress(currentLap.startLapTimeMs, currentLap.lapDurationMs, playheadMs);
 
     standings.push({
       driverNumber,

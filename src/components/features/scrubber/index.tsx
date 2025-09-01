@@ -10,14 +10,14 @@ interface ScrubberProps {
 }
 
 export const Scrubber = ({ className, inputClassName }: ScrubberProps) => {
-  const currentTime = useSessionTimeLineStore((state) => state.currentTime);
-  const sessionStartTime = useSessionTimeLineStore((state) => state.sessionStartTime);
+  const playheadMs = useSessionTimeLineStore((state) => state.playheadMs);
+  const sessionStartTimeMs = useSessionTimeLineStore((state) => state.sessionStartTimeMs);
   const sessionEndTime = useSessionTimeLineStore((state) => state.sessionEndTime);
   const seek = useSessionTimeLineStore((state) => state.seek);
 
-  if (sessionEndTime === null || sessionStartTime === null || currentTime === null) return null;
+  if (sessionEndTime === null || sessionStartTimeMs === null || playheadMs === null) return null;
 
-  const timeLeftInRace = formatTime(sessionEndTime - currentTime);
+  const timeLeftInRace = formatTime(sessionEndTime - playheadMs);
 
   const handleScrubberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     seek(Number(e.target.value));
@@ -31,9 +31,9 @@ export const Scrubber = ({ className, inputClassName }: ScrubberProps) => {
         type="range"
         id="scrubber"
         step="10000"
-        min={sessionStartTime ?? 0}
+        min={sessionStartTimeMs ?? 0}
         max={sessionEndTime ?? 0}
-        value={currentTime ?? sessionStartTime ?? 0}
+        value={playheadMs ?? sessionStartTimeMs ?? 0}
         onChange={handleScrubberChange}
       />
 

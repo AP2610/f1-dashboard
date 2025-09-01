@@ -2,14 +2,13 @@ import { type LapDataMap } from '@/server-functions/api/get-laps-for-driver-data
 import { create } from 'zustand';
 
 interface LapsStore {
-  lapsByDriver: LapDataMap;
-  setLapsByDriver: (lapsByDriver: LapDataMap) => void;
-  addLapsByDriver: (lapsByDriver: LapDataMap) => void;
+  driverLaps: LapDataMap;
+  setLapsByDriver: (driverLaps: LapDataMap) => void;
+  addLapsByDriver: (driverLaps: LapDataMap) => void;
 }
 
 export const useLapsStore = create<LapsStore>((set) => ({
-  lapsByDriver: new Map(),
-  setLapsByDriver: (lapsByDriver: LapDataMap) => set({ lapsByDriver }),
-  addLapsByDriver: (lapsByDriver: LapDataMap) =>
-    set((state) => ({ lapsByDriver: new Map([...state.lapsByDriver, ...lapsByDriver]) })),
+  driverLaps: new Map(),
+  setLapsByDriver: (driverLaps: LapDataMap) => set({ driverLaps }),
+  addLapsByDriver: (driverLaps: LapDataMap) => set((state) => ({ driverLaps: new Map([...state.driverLaps, ...driverLaps]) })),
 }));
