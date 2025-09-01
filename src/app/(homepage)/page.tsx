@@ -8,6 +8,7 @@ import { getSessionData } from '@/server-functions/api/get-session-data';
 import { getLapsForDriverData } from '@/server-functions/api/get-laps-for-driver-data';
 import { getSessionResult } from '@/server-functions/api/get-session-result';
 import { getSessionDriverDataWithQualifying } from '@/server-functions/api/get-session-driver-data-with-qualifying';
+import { Scrubber } from '@/components/features/scrubber';
 
 const Home = async () => {
   const sessionData = await getSessionData(CONSTANTS.raceSessionKey);
@@ -47,26 +48,18 @@ const Home = async () => {
 
       <Section isFullWidth className="grid grid-cols-12 gap-8">
         {/* Standings */}
-        <div className="col-span-3 space-y-8">
+        <div className="col-span-4 flex flex-col gap-4 space-y-8">
+          <PlaybackControls />
+
+          <Scrubber />
+        </div>
+
+        <div className="col-span-2 space-y-8">
           <Standings />
         </div>
 
-        <div className="col-span-9 space-y-8">
-          {/* Replace with heading component */}
-          <h2>Track Map</h2>
-
-          <div className="grid grid-cols-12 gap-8">
-            {/* Replace with button component */}
-            <div className="col-span-3">
-              <div className="flex flex-col gap-4">
-                <PlaybackControls />
-              </div>
-            </div>
-
-            <div className="col-span-9 mx-auto">
-              <TrackMap />
-            </div>
-          </div>
+        <div className="col-span-6 space-y-8">
+          <TrackMap />
         </div>
       </Section>
     </div>

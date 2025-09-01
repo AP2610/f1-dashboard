@@ -29,17 +29,12 @@ export const SessionInitialiser = ({
   const setSession = useSessionTimeLineStore((state) => state.setSession);
   const setLapsByDriver = useLapsStore((state) => state.setLapsByDriver);
   const setDriverData = useDriverStore((state) => state.setDriverData);
-  const driverData = useDriverStore((state) => state.driverData);
 
   useEffect(() => {
     setSession(CONSTANTS.raceSessionKey, sessionStartTime, sessionEndTime, initialCurrentTime);
     setLapsByDriver(initialLapsByDriver);
     setDriverData(sessionDriverDataWithQualifying);
   }, [sessionStartTime, sessionEndTime, sessionDriverDataWithQualifying, initialLapsByDriver, qualifyingPositionData]);
-
-  useEffect(() => {
-    console.log('driverData-initialiser: ', driverData);
-  }, [driverData]);
 
   return null;
 };

@@ -9,7 +9,12 @@ import { z } from 'zod';
 // Takes T as the type of the data to be returned
 export const getApiData = async <T>(path: string, schema: z.ZodSchema<T>): Promise<BaseReturnType<T>> => {
   try {
-    const response = await fetch(`${CONSTANTS.baseUrl}${path}`);
+    const response = await fetch(`${CONSTANTS.baseUrl}${path}`, {
+      cache: 'force-cache',
+      next: {
+        revalidate: 60 * 60 * 24 * 30,
+      },
+    });
 
     if (!response.ok) {
       return {

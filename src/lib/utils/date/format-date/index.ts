@@ -62,3 +62,13 @@ export function formatDateNumeric(date: Date | string | number, separator: strin
   const year = dateObject.getFullYear();
   return `${day}${separator}${month}${separator}${year}`;
 }
+
+export function formatTime(date: Date | string | number): string {
+  const dateObject = new Date(date);
+  const time = dateObject.getTime();
+  const hours = Math.floor(time / 3600000);
+  const minutes = dateObject.getMinutes().toString().padStart(2, '0');
+  const seconds = dateObject.getSeconds().toString().padStart(2, '0');
+
+  return `${hours}:${minutes}:${seconds}`;
+}
