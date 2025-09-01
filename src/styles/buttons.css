@@ -1,0 +1,37 @@
+@layer components {
+  .btn-base {
+    @apply flex min-h-[44px] cursor-pointer items-center justify-center px-4 py-2 text-center font-raleway text-sm font-medium transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-icon {
+    @apply w-[fit-content] cursor-pointer p-4;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-foreground hover:bg-primary/60 disabled:hover:bg-primary;
+  }
+
+  .btn-secondary {
+    @apply border-2 border-gray bg-gray/40 text-foreground hover:bg-gray/60 disabled:hover:bg-gray/60;
+  }
+
+  .btn-tertiary {
+    @apply bg-tertiary text-foreground hover:bg-tertiary/60 disabled:hover:bg-tertiary;
+  }
+
+  .btn-inline {
+    @apply relative inline-flex cursor-pointer items-center font-raleway text-primary;
+
+    &::after {
+      @apply absolute bottom-0 left-0 h-[1px] w-0 bg-primary transition-all duration-300 content-[""];
+    }
+
+    &:hover::after {
+      @apply w-full;
+    }
+  }
+
+  .btn-danger {
+    @apply bg-red text-foreground hover:bg-red/60 disabled:hover:bg-red;
+  }
+}
