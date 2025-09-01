@@ -3,6 +3,7 @@
 import { useStandings } from '@/hooks/use-standings';
 import { LapCounter } from './lap-counter';
 import { useDriverStore } from '@/lib/stores/driver-store';
+import { StandingsRow } from './standings-row';
 
 // TODO: implement component
 export const Standings = () => {
@@ -14,14 +15,18 @@ export const Standings = () => {
       <h2>Standings</h2>
       <LapCounter />
 
-      {standings.map((standing, index) => (
-        <div key={standing.driverNumber} className="flex items-center gap-2">
-          <div>POS {index + 1}</div>
-          <div>{driverData.get(standing.driverNumber)?.name_acronym ?? 'N/A'}</div>
-          <div>{standing.lapNumber}</div>
-          {/* <div>{standing.lapProgress}</div> */}
-        </div>
-      ))}
+      <ul className="space-y-2">
+        {standings.map((standing, index) => (
+          <StandingsRow
+            key={driverData.get(standing.driverNumber)?.driver_number}
+            position={index + 1}
+            acronym={driverData.get(standing.driverNumber)?.name_acronym ?? 'N/A'}
+            teamHex={driverData.get(standing.driverNumber)?.team_colour ?? '000'}
+            lapNumber={standing.lapNumber}
+            lapProgress={standing.lapProgress}
+          />
+        ))}
+      </ul>
     </div>
   );
 };

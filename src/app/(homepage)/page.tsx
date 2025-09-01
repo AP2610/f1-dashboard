@@ -16,7 +16,7 @@ const Home = async () => {
     CONSTANTS.raceSessionKey,
     CONSTANTS.quallifyingSessionKey,
   );
-  const sessionLapData = await getLapsForDriverData(CONSTANTS.raceSessionKey, 25);
+  const sessionLapData = await getLapsForDriverData(CONSTANTS.raceSessionKey, 12);
   const qualifyingSessionResultData = await getSessionResult(CONSTANTS.quallifyingSessionKey);
 
   if (
@@ -48,13 +48,13 @@ const Home = async () => {
 
       <Section isFullWidth className="grid grid-cols-12 gap-8">
         {/* Standings */}
-        <div className="col-span-4 flex flex-col gap-4 space-y-8">
+        <div className="col-span-3 flex flex-col gap-4 space-y-8">
           <PlaybackControls />
 
           <Scrubber />
         </div>
 
-        <div className="col-span-2 space-y-8">
+        <div className="col-span-3 space-y-8">
           <Standings />
         </div>
 

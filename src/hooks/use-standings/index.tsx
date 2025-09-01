@@ -4,6 +4,7 @@ import { useSessionTimeLineStore } from '@/lib/stores/session-timeline-store';
 import { findCurrentLap, getDriverLapProgress } from '@/lib/utils/lap-helpers';
 import { useLapsStore } from '@/lib/stores/laps-store';
 import { useDriverStore } from '@/lib/stores/driver-store';
+import { useRef } from 'react';
 
 type StandingsEntry = {
   driverNumber: number;
@@ -20,8 +21,14 @@ export function useStandings() {
   const lapsByDriver = useLapsStore((state) => state.lapsByDriver);
   const driverData = useDriverStore((state) => state.driverData);
 
+  // always keep a copy of the previous standings to return in the edge cases where standings is empty
+  const previousStandings = useRef<StandingsEntry[]>([]);
+  const previousLeaderLapNumber = useRef<number | null>(null);
+
+  const totalLaps = lapsByDriver.get(1)?.length ?? 0;
+
   if (currentTime === null || lapsByDriver === null || sessionStartTime === null) {
-    return { standings: [], currentLapNumber: null, totalLaps: 0 };
+    return { standings: previousStandings.current, currentLapNumber: previousLeaderLapNumber.current, totalLaps };
   }
 
   // if true, we'll use the quali grid to display standings
@@ -36,22 +43,37 @@ export function useStandings() {
       position: idx + 1,
     }));
 
-    return { standings, leaderLapNumber: 1, totalLaps: lapsByDriver.get(1)?.length ?? 0 };
+    return { standings, leaderLapNumber: 1, totalLaps };
   }
 
   const standings: StandingsEntry[] = [];
+
+  // Map previous standings by driver for quick per-driver fallback
+  const previousByDriver = new Map(previousStandings.current.map((standing) => [standing.driverNumber, standing] as const));
 
   // live standings
   for (const [driverNumber, lapsForDriver] of lapsByDriver.entries()) {
     if (!lapsForDriver || lapsForDriver.length === 0) continue;
 
     const currentLap = findCurrentLap(currentTime, lapsForDriver, sessionStartTime);
-    if (!currentLap) continue; // skip if driver it not on a lap
-
-    const lapProgress = getDriverLapProgress(currentLap.startLapTime, currentLap.lapDuration, currentTime);
-
     const driver = driverData.get(driverNumber);
     if (!driver) continue; // skip if driver is not in data
+
+    if (!currentLap) {
+      // keep last known row for this driver instead of dropping them for this frame
+      const prev = previousByDriver.get(driverNumber);
+      if (prev) {
+        standings.push({
+          driverNumber,
+          lapNumber: prev.lapNumber,
+          lapProgress: prev.lapProgress,
+          qualifyingPosition: driver.qualifyingPosition,
+        });
+      }
+      continue;
+    }
+
+    const lapProgress = getDriverLapProgress(currentLap.startLapTime, currentLap.lapDuration, currentTime);
 
     standings.push({
       driverNumber,
@@ -62,7 +84,11 @@ export function useStandings() {
   }
 
   if (standings.length === 0) {
-    return { standings: [], currentLapNumber: null, totalLaps: 0 };
+    return {
+      standings: previousStandings.current,
+      currentLapNumber: previousLeaderLapNumber.current,
+      totalLaps,
+    };
   }
 
   // Sort: highest lapNumber, then highest progress
@@ -79,6 +105,10 @@ export function useStandings() {
     return a.qualifyingPosition - b.qualifyingPosition;
   });
 
+  previousStandings.current = standings;
+  previousLeaderLapNumber.current = standings[0]?.lapNumber;
+
   const leader = standings[0];
-  return { standings, leaderLapNumber: leader.lapNumber, totalLaps: lapsByDriver.get(1)?.length ?? 0 };
+
+  return { standings, leaderLapNumber: leader.lapNumber, totalLaps };
 }

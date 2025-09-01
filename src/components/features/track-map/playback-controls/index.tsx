@@ -60,11 +60,7 @@ export const PlaybackControls = () => {
         Pause
       </button>
 
-      <button
-        onClick={handleResetSessionClick}
-        disabled={!isPlaying}
-        className="rounded-md bg-tertiary p-2 text-white disabled:bg-tertiary/50"
-      >
+      <button onClick={handleResetSessionClick} className="rounded-md bg-tertiary p-2 text-white disabled:bg-tertiary/50">
         Reset Session
       </button>
 
