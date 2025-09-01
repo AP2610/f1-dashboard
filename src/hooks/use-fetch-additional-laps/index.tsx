@@ -1,73 +1,72 @@
-// hooks/use-auto-extend-laps.ts
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useLapsStore } from '@/lib/stores/laps-store';
-import { useSessionTimeLineStore } from '@/lib/stores/session-timeline-store';
-import { getLapsForDriverData } from '@/server-functions/api/get-laps-for-driver-data'; // your server function
-import { getHighestLapForDriver } from '@/lib/utils/laps-helpers';
-import { useStandings } from '@/hooks/use-standings'; // the version returning full standings
+import { getLapsForDriverData } from '@/server-functions/api/get-laps-for-driver-data';
+import { useStandings } from '@/hooks/use-standings';
+import { CONSTANTS } from '@/lib/constants';
 
-const CHUNK_SIZE = 3;
-const SAFETY_THRESHOLD = 1; // when only <=1 lap is left, extend
+const ADDITIONAL_LAPS_TO_FETCH = 3;
+const SAFETY_THRESHOLD = 1;
 
-export function useAutoExtendLaps() {
-  const queryClient = useQueryClient();
+export function useFetchAdditionalLaps() {
+  const isFetching = useRef(false);
+  const sessionKey = CONSTANTS.raceSessionKey;
 
-  // stores
-  const sessionKey = useSessionTimeLineStore((s) => s.raceSessionKey);
   const driverLaps = useLapsStore((s) => s.driverLaps);
-  const addLapsByDriver = useLapsStore((s) => s.addLapsByDriver);
+  const addDriverLaps = useLapsStore((s) => s.addDriverLaps);
 
-  // leader from standings (already sorted by lapNumber + progress)
-  const { standings } = useStandings();
-  const leaderNumber = standings[0]?.driverNumber ?? null;
+  const { leaderLapNumber, totalLaps } = useStandings();
 
-  // prevent duplicate requests for the same target
+  // storing the last requested up to lap to prevent duplicate requests for the same target
   const lastRequestedUpToRef = useRef<number | null>(null);
 
-  // A disabled query that we trigger programmatically
-  const fetchMore = async (upToLap: number) => {
-    if (sessionKey == null) return;
-    const res = await getLapsForDriverData(sessionKey, upToLap);
-    if (res.hasError || !res.data) return;
-    // Merge new laps
-    addLapsByDriver(res.data);
-    // Prime the cache (optional)
-    queryClient.setQueryData(['laps', sessionKey, upToLap], res.data);
-  };
-
-  // React Query object so we get refetch behavior if you want later
-  const { refetch, isFetching } = useQuery({
-    queryKey: ['laps', sessionKey, lastRequestedUpToRef.current],
-    queryFn: () => fetchMore(lastRequestedUpToRef.current!),
-    enabled: false, // manual control only
-    staleTime: Infinity,
-    gcTime: Infinity,
-  });
+  // reset the last requested up to lap when the total laps are more than the last requested up to lap
+  useEffect(() => {
+    if (lastRequestedUpToRef.current !== null && totalLaps >= lastRequestedUpToRef.current) {
+      lastRequestedUpToRef.current = null;
+    }
+  }, [totalLaps]);
 
   useEffect(() => {
-    if (leaderNumber == null || sessionKey == null) return;
+    console.log('useFetchAdditionalLaps');
 
-    const highestCached = getHighestLapForDriver(driverLaps, leaderNumber);
-    if (highestCached == null) return;
+    const fetchMoreLaps = async (upToLap: number) => {
+      try {
+        isFetching.current = true;
+        const res = await getLapsForDriverData(sessionKey, upToLap);
 
-    const leadersCurrentLap = standings[0]?.lapNumber ?? null;
+        if (res.hasError || !res.data) {
+          lastRequestedUpToRef.current = null;
+          return;
+        }
+
+        addDriverLaps(res.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        isFetching.current = false;
+      }
+    };
+
+    const leadersCurrentLap = leaderLapNumber;
     if (leadersCurrentLap == null) return;
 
-    const lapsLeft = highestCached - leadersCurrentLap;
+    const lapsLeft = totalLaps - leadersCurrentLap;
+    console.log('lapsLeft', lapsLeft);
 
     if (lapsLeft <= SAFETY_THRESHOLD) {
-      const targetUpToLap = highestCached + CHUNK_SIZE;
+      const targetUpToLap = totalLaps + ADDITIONAL_LAPS_TO_FETCH;
+      console.log('targetUpToLap', targetUpToLap);
 
-      // avoid duplicate calls for the same target
-      if (lastRequestedUpToRef.current === targetUpToLap || isFetching) return;
+      // avoid duplicate calls for the same target up to lap
+      if (lastRequestedUpToRef.current === targetUpToLap || isFetching.current) {
+        return;
+      }
 
       lastRequestedUpToRef.current = targetUpToLap;
 
-      // fire the controlled query
-      refetch();
+      fetchMoreLaps(targetUpToLap);
     }
-  }, [leaderNumber, standings, driverLaps, sessionKey, isFetching, refetch]);
+  }, [leaderLapNumber, totalLaps, driverLaps, sessionKey, addDriverLaps, isFetching]);
 }

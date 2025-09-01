@@ -16,7 +16,7 @@ const Home = async () => {
     CONSTANTS.raceSessionKey,
     CONSTANTS.quallifyingSessionKey,
   );
-  const sessionLapData = await getLapsForDriverData(CONSTANTS.raceSessionKey, 12);
+  const sessionLapData = await getLapsForDriverData(CONSTANTS.raceSessionKey, 3);
   const qualifyingSessionResultData = await getSessionResult(CONSTANTS.quallifyingSessionKey);
 
   if (

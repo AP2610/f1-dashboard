@@ -28,7 +28,7 @@ export function useStandings() {
   const totalLaps = driverLaps.get(1)?.length ?? 0;
 
   if (playheadMs === null || driverLaps === null || sessionStartTimeMs === null) {
-    return { standings: previousStandings.current, currentLapNumber: previousLeaderLapNumber.current, totalLaps };
+    return { standings: previousStandings.current, leaderLapNumber: previousLeaderLapNumber.current, totalLaps };
   }
 
   // if true, we'll use the quali grid to display standings
@@ -90,7 +90,7 @@ export function useStandings() {
   if (standings.length === 0) {
     return {
       standings: previousStandings.current,
-      currentLapNumber: previousLeaderLapNumber.current,
+      leaderLapNumber: previousLeaderLapNumber.current,
       totalLaps,
     };
   }

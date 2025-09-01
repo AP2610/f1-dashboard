@@ -8,6 +8,7 @@ import { type DriverDataMapWithQualifyingPosition } from '@/server-functions/api
 import { type LapDataMap } from '@/server-functions/api/get-laps-for-driver-data';
 import { type SessionResult } from '@/server-functions/api/get-session-result';
 import { useEffect } from 'react';
+import { useFetchAdditionalLaps } from '@/hooks/use-fetch-additional-laps';
 
 interface SessionInitialiserProps {
   sessionStartTimeMs: number;
@@ -27,14 +28,21 @@ export const SessionInitialiser = ({
   qualifyingPositionData,
 }: SessionInitialiserProps) => {
   const setSession = useSessionTimeLineStore((state) => state.setSession);
-  const setLapsByDriver = useLapsStore((state) => state.setLapsByDriver);
+  const setDriverLaps = useLapsStore((state) => state.setDriverLaps);
   const setDriverData = useDriverStore((state) => state.setDriverData);
+  const driverLaps = useLapsStore((state) => state.driverLaps);
+
+  useFetchAdditionalLaps();
 
   useEffect(() => {
     setSession(CONSTANTS.raceSessionKey, sessionStartTimeMs, sessionEndTime, initialCurrentTime);
-    setLapsByDriver(initialLapsByDriver);
+    setDriverLaps(initialLapsByDriver);
     setDriverData(sessionDriverDataWithQualifying);
   }, [sessionStartTimeMs, sessionEndTime, sessionDriverDataWithQualifying, initialLapsByDriver, qualifyingPositionData]);
+
+  useEffect(() => {
+    console.log('driverLaps', driverLaps);
+  }, [driverLaps]);
 
   return null;
 };
