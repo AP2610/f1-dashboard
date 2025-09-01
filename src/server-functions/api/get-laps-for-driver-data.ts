@@ -3,6 +3,8 @@
 import { z } from 'zod';
 import { type BaseReturnType } from '@/lib/types/api-types';
 import { getApiData } from './get-api-data';
+import path from 'path';
+import { promises as fs } from 'fs';
 
 const lapDataSchema = z.object({
   date_start: z
@@ -26,12 +28,60 @@ export type LapData = z.infer<typeof lapDataSchema>;
 export type LapDataMap = Map<number, LapData[]>;
 
 export const getLapsForDriverData = async (raceSessionKey: number, lapNumber: number): Promise<BaseReturnType<LapDataMap>> => {
-  const path = `/laps?session_key=${raceSessionKey}&lap_number<=${lapNumber}`;
+  if (process.env.NEXT_PUBLIC_USE_BACKUP_DATA === 'true') {
+    try {
+      const filePath = path.join(process.cwd(), 'src/lib/backup-json/driver-lap-data.json');
+      const raw = await fs.readFile(filePath, 'utf-8');
+      const sessionBackupLapData = JSON.parse(raw) as Array<{
+        date_start: string;
+        driver_number: number;
+        duration_sector_1: number;
+        duration_sector_2: number;
+        duration_sector_3: number;
+        is_pit_out_lap: boolean;
+        lap_duration: number;
+        lap_number: number;
+      }>;
+
+      if (!sessionBackupLapData.length) {
+        return { hasError: true, errorMessage: 'No backup lap data found', data: null };
+      }
+
+      const lapsByDriverNumberMap: LapDataMap = new Map();
+
+      // Group the laps by driver number
+      for (const lap of sessionBackupLapData) {
+        const lapsForDriver = lapsByDriverNumberMap.get(lap.driver_number) ?? [];
+
+        // Avoid duplicate lap numbers
+        if (!lapsForDriver.some((existing) => existing.lap_number === lap.lap_number)) {
+          lapsForDriver.push({
+            ...lap,
+            date_start: lap.date_start ? Date.parse(lap.date_start) : null,
+            lap_duration: lap.lap_duration ? lap.lap_duration * 1000 : null,
+          });
+        }
+
+        lapsByDriverNumberMap.set(lap.driver_number, lapsForDriver);
+      }
+
+      // Ensure correct order of laps for each driver
+      for (const lapsForDriver of [...lapsByDriverNumberMap.values()]) {
+        lapsForDriver.sort((a, b) => a.lap_number - b.lap_number);
+      }
+
+      return { hasError: false, errorMessage: null, data: lapsByDriverNumberMap };
+    } catch (e: unknown) {
+      return { hasError: true, errorMessage: e instanceof Error ? e.message : 'Failed to read backup lap data', data: null };
+    }
+  }
+
+  const endpoint = `/laps?session_key=${raceSessionKey}&lap_number<=${lapNumber}`;
 
   // Validated the data is an array of lap data
   const schema = z.array(lapDataSchema);
 
-  const { hasError, errorMessage, data: sessionLapData } = await getApiData<LapData[]>(path, schema);
+  const { hasError, errorMessage, data: sessionLapData } = await getApiData<LapData[]>(endpoint, schema);
 
   if (hasError || sessionLapData === null) {
     return { hasError, errorMessage, data: null };

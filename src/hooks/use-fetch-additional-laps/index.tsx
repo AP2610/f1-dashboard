@@ -29,7 +29,9 @@ export function useFetchAdditionalLaps() {
   }, [totalLaps]);
 
   useEffect(() => {
-    console.log('useFetchAdditionalLaps');
+    if (process.env.NEXT_PUBLIC_USE_BACKUP_DATA === 'true') {
+      return;
+    }
 
     const fetchMoreLaps = async (upToLap: number) => {
       try {
