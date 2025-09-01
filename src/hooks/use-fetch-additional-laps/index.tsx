@@ -37,6 +37,7 @@ export function useFetchAdditionalLaps() {
         const res = await getLapsForDriverData(sessionKey, upToLap);
 
         if (res.hasError || !res.data) {
+          console.error('Error fetching more laps', res.errorMessage);
           lastRequestedUpToRef.current = null;
           return;
         }
