@@ -3,7 +3,7 @@
 import { useSessionTimeLineStore } from '@/lib/stores/session-timeline-store';
 import { useEffect, useRef } from 'react';
 
-// The hook that controls the playback of a session. It creates an animation frame loop that calls the tick function on every animation frame and returns a start and stop function to control the playback.
+// controls the playback of a session. It creates an animation frame loop that calls the tick function on every animation frame and returns a start and stop function to control the playback.
 export const useRacePlayback = () => {
   const animationFrameId = useRef<number | null>(null);
   const lastTimestamp = useRef<number | null>(null);
@@ -40,7 +40,6 @@ export const useRacePlayback = () => {
     animationFrameId.current = requestAnimationFrame(loop);
   };
 
-  // Cleanup the animation when the component unmounts
   useEffect(() => {
     return () => {
       if (animationFrameId.current) {
@@ -53,13 +52,12 @@ export const useRacePlayback = () => {
     if (animationFrameId.current != null) return;
 
     setIsPlaying(true);
-    // Reset the last timestamp to start the loop from the beginning
+
     lastTimestamp.current = null;
     animationFrameId.current = requestAnimationFrame(loop);
   };
 
   const stop = () => {
-    // Cancel the animation frame and reset the animation frame id
     if (animationFrameId.current) {
       setIsPlaying(false);
       cancelAnimationFrame(animationFrameId.current);

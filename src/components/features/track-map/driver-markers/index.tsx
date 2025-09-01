@@ -52,7 +52,7 @@ export const DriverMarkers = ({ pathRef, driverNumbersToShow, dotRadius = 8, sho
   const driverList = useMemo(() => driverNumbersToShow ?? Array.from(driverData.keys()), [driverData, driverNumbersToShow]);
 
   const driverMarkers = useMemo(() => {
-    if (!path || currentTime == null || totalPathLength === 0 || sessionStartTime == null || driverList.length === 0) {
+    if (!path || currentTime === null || totalPathLength === 0 || sessionStartTime === null || driverList.length === 0) {
       return [] as DriverMarker[];
     }
 

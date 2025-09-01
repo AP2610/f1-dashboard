@@ -17,7 +17,6 @@ const Home = async () => {
   );
   const sessionLapData = await getLapsForDriverData(CONSTANTS.raceSessionKey, 25);
   const qualifyingSessionResultData = await getSessionResult(CONSTANTS.quallifyingSessionKey);
-  console.log('driverData-page: ', sessionDriverDataWithQualifying);
 
   if (
     sessionData.hasError ||
