@@ -46,8 +46,11 @@ export const Scrubber = ({ className, inputClassName }: ScrubberProps) => {
   };
 
   return (
-    <div className={cn('space-y-2 font-raleway', className)}>
-      <label htmlFor="scrubber">Scrubber</label>
+    <div className={cn('space-y-4 bg-black/50 p-6 font-raleway shadow-lg', className)}>
+      <label className="block" htmlFor="scrubber">
+        Scrubber
+      </label>
+
       <input
         className={cn('w-full', inputClassName)}
         type="range"
@@ -65,7 +68,7 @@ export const Scrubber = ({ className, inputClassName }: ScrubberProps) => {
         onTouchCancel={handleScrubberMouseUp}
       />
 
-      <p>-{timeLeftInRace}</p>
+      <p className="font-raleway text-deep-yellow">-{timeLeftInRace}</p>
     </div>
   );
 };

@@ -5,18 +5,33 @@
 
   .btn-icon {
     @apply w-[fit-content] cursor-pointer p-4;
+    border-image: linear-gradient(to right, var(--color-gray), var(--color-accent-1)) 1;
+    border-width: 1px;
+    border-style: solid;
   }
 
   .btn-primary {
-    @apply bg-primary text-foreground hover:bg-primary/60 disabled:hover:bg-primary;
+    @apply not-disabled:hover:bg-primary/10 active:scale-95 active:bg-primary/20;
+    border-image: linear-gradient(to right, var(--color-gray), var(--color-primary)) 1;
+    border-width: 1px;
+    border-style: solid;
+    color: var(--color-primary);
   }
 
   .btn-secondary {
-    @apply border-2 border-gray bg-gray/40 text-foreground hover:bg-gray/60 disabled:hover:bg-gray/60;
+    @apply not-disabled:hover:bg-deep-yellow/10 active:scale-95 active:bg-deep-yellow/20;
+    border-image: linear-gradient(to right, var(--color-gray), var(--color-deep-yellow)) 1;
+    border-width: 1px;
+    border-style: solid;
+    color: var(--color-deep-yellow);
   }
 
   .btn-tertiary {
-    @apply bg-tertiary text-foreground hover:bg-tertiary/60 disabled:hover:bg-tertiary;
+    @apply not-disabled:hover:bg-tertiary/10 active:scale-95 active:bg-tertiary/20;
+    border-image: linear-gradient(to right, var(--color-gray), var(--color-tertiary)) 1;
+    border-width: 1px;
+    border-style: solid;
+    color: var(--color-tertiary);
   }
 
   .btn-inline {
