@@ -40,14 +40,14 @@ export const PlaybackControls = () => {
       key={speed}
       onClick={() => setPlaybackSpeed(speed)}
       disabled={playbackSpeed === speed}
-      className="col-span-1 h-12 w-full rounded-none font-raleway text-sm text-accent-1 transition-all not-disabled:hover:bg-accent-1/10 active:bg-accent-1/20"
+      className="col-span-1 h-12 w-full rounded-none font-raleway text-sm text-accent-1 transition-all not-disabled:bg-accent-1/10 not-disabled:hover:bg-accent-1/10 active:bg-accent-1/20"
     >
       <span className="flex items-center justify-center">{speed}x</span>
     </Button>
   ));
 
   return (
-    <div className="flex flex-col gap-4 rounded-sm bg-black/50 p-6 shadow-lg">
+    <div className="flex flex-col gap-4 rounded-md bg-black/90 p-6 shadow-lg">
       <div className="flex gap-2">
         <Button variant="primary" onClick={handleStartClick} disabled={isPlaying} className="w-full">
           Start

@@ -11,7 +11,7 @@
   }
 
   .btn-primary {
-    @apply not-disabled:hover:bg-primary/10 active:scale-95 active:bg-primary/20;
+    @apply not-disabled:bg-primary/10 not-disabled:hover:bg-primary/20 active:scale-95 active:bg-primary/30;
     border-image: linear-gradient(to right, var(--color-gray), var(--color-primary)) 1;
     border-width: 1px;
     border-style: solid;
@@ -19,7 +19,7 @@
   }
 
   .btn-secondary {
-    @apply not-disabled:hover:bg-deep-yellow/10 active:scale-95 active:bg-deep-yellow/20;
+    @apply not-disabled:bg-deep-yellow/10 not-disabled:hover:bg-deep-yellow/20 active:scale-95 active:bg-deep-yellow/30;
     border-image: linear-gradient(to right, var(--color-gray), var(--color-deep-yellow)) 1;
     border-width: 1px;
     border-style: solid;
@@ -27,7 +27,7 @@
   }
 
   .btn-tertiary {
-    @apply not-disabled:hover:bg-tertiary/10 active:scale-95 active:bg-tertiary/20;
+    @apply not-disabled:bg-tertiary/10 not-disabled:hover:bg-tertiary/20 active:scale-95 active:bg-tertiary/30;
     border-image: linear-gradient(to right, var(--color-gray), var(--color-tertiary)) 1;
     border-width: 1px;
     border-style: solid;

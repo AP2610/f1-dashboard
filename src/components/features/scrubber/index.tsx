@@ -46,7 +46,7 @@ export const Scrubber = ({ className, inputClassName }: ScrubberProps) => {
   };
 
   return (
-    <div className={cn('space-y-4 bg-black/50 p-6 font-raleway shadow-lg', className)}>
+    <div className={cn('space-y-4 rounded-md bg-black/90 p-6 font-raleway shadow-lg', className)}>
       <label className="block" htmlFor="scrubber">
         Scrubber
       </label>

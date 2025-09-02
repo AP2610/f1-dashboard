@@ -11,11 +11,13 @@ export const Standings = () => {
   const driverData = useDriverStore((state) => state.driverData);
 
   return (
-    <div>
-      <h2>Standings</h2>
-      <LapCounter />
+    <div className="rounded-md bg-black/90 pt-6 font-raleway shadow-lg">
+      <div className="flex items-center justify-between px-4">
+        <h2 className="text-xl font-bold">Standings</h2>
+        <LapCounter />
+      </div>
 
-      <ul className="space-y-2">
+      <ul>
         {standings.map((standing, index) => (
           <StandingsRow
             key={driverData.get(standing.driverNumber)?.driver_number}

@@ -54,11 +54,11 @@ const Home = async () => {
           <Scrubber />
         </div>
 
-        <div className="col-span-3 space-y-8">
+        <div className="col-span-3 max-h-[calc(100vh-100px)] space-y-8 overflow-y-auto">
           <Standings />
         </div>
 
-        <div className="col-span-6 space-y-8">
+        <div className="col-span-6 mb-auto space-y-8 rounded-md bg-black/90 p-6 shadow-lg">
           <TrackMap />
         </div>
       </Section>

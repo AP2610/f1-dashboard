@@ -16,6 +16,7 @@
   --color-deep-yellow: rgba(255, 215, 0, 1);
   --color-green: rgba(0, 132, 80, 1);
   --color-red: rgba(255, 69, 0, 1);
+  --color-dark-red: rgba(71, 0, 0, 1);
 
   /* Fonts */
   --font-raleway: var(--font-raleway);
@@ -24,7 +25,7 @@
 
 @theme inline {
   /* Semantic colors */
-  --color-background: var(--color-blue-black);
+  --color-background: var(--color-light-gray);
   --color-foreground: var(--color-white);
 
   --color-track: var(--color-gray);
