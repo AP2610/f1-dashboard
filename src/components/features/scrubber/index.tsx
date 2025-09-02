@@ -15,11 +15,15 @@ export const Scrubber = ({ className, inputClassName }: ScrubberProps) => {
   const playheadMs = useSessionTimeLineStore((state) => state.playheadMs);
   const sessionStartTimeMs = useSessionTimeLineStore((state) => state.sessionStartTimeMs);
   const sessionEndTime = useSessionTimeLineStore((state) => state.sessionEndTime);
+
+  const setIsScrubbing = useSessionTimeLineStore((state) => state.setIsScrubbing);
   const seek = useSessionTimeLineStore((state) => state.seek);
 
   const driverLaps = useLapsStore((state) => state.driverLaps);
+
   const lastAvailableLap = useMemo(() => driverLaps.get(1)?.at(-1), [driverLaps]);
   const lastAvailableLapStartMs = useMemo(() => lastAvailableLap?.date_start, [lastAvailableLap]);
+
   const bufferEndMs = useMemo(
     () => lastAvailableLapStartMs! + (lastAvailableLap?.lap_duration ?? 0),
     [lastAvailableLapStartMs, lastAvailableLap],
@@ -31,6 +35,14 @@ export const Scrubber = ({ className, inputClassName }: ScrubberProps) => {
 
   const handleScrubberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     seek(Number(event.target.value));
+  };
+
+  const handleScrubberMouseDown = () => {
+    setIsScrubbing(true);
+  };
+
+  const handleScrubberMouseUp = () => {
+    setIsScrubbing(false);
   };
 
   return (
@@ -45,6 +57,12 @@ export const Scrubber = ({ className, inputClassName }: ScrubberProps) => {
         max={bufferEndMs ?? sessionEndTime ?? 0}
         value={playheadMs ?? sessionStartTimeMs ?? 0}
         onChange={handleScrubberChange}
+        onMouseDown={handleScrubberMouseDown}
+        onMouseUp={handleScrubberMouseUp}
+        onMouseLeave={handleScrubberMouseUp}
+        onTouchStart={handleScrubberMouseDown}
+        onTouchEnd={handleScrubberMouseUp}
+        onTouchCancel={handleScrubberMouseUp}
       />
 
       <p>-{timeLeftInRace}</p>
