@@ -10,9 +10,11 @@ interface SessionTimelineStore {
   playheadMs: number | null;
   playbackSpeed: PlaybackSpeed;
   isPlaying: boolean;
+  isScrubbing: boolean;
   setSession: (raceSessionKey: number, sessionStartTimeMs: number, sessionEndTime: number, playheadMs: number) => void;
   setPlaybackSpeed: (playbackSpeed: PlaybackSpeed) => void;
   setIsPlaying: (isPlaying: boolean) => void;
+  setIsScrubbing: (isScrubbing: boolean) => void;
   seek: (timeToSeekTo: number) => void;
   tick: (deltaTime: number) => boolean;
 }
@@ -24,12 +26,14 @@ export const useSessionTimeLineStore = create<SessionTimelineStore>((set, get) =
   playheadMs: null, // I'm using playheadMs to track where the "playhead" is in the race timeline.
   playbackSpeed: 1,
   isPlaying: false, // I'm currently only using this for the playback controls disabled state, might use for animations in the future.
+  isScrubbing: false,
 
   // Setters
   setSession: (raceSessionKey: number, sessionStartTimeMs: number, sessionEndTime: number, playheadMs: number) =>
     set({ raceSessionKey, sessionStartTimeMs, sessionEndTime, playheadMs }),
   setPlaybackSpeed: (playbackSpeed: PlaybackSpeed) => set({ playbackSpeed }),
   setIsPlaying: (isPlaying: boolean) => set({ isPlaying }),
+  setIsScrubbing: (isScrubbing: boolean) => set({ isScrubbing }),
 
   // Actions
   seek: (timeToSeekTo: number) =>
@@ -49,9 +53,9 @@ export const useSessionTimeLineStore = create<SessionTimelineStore>((set, get) =
     }),
 
   tick: (deltaTime: number): boolean => {
-    const { sessionStartTimeMs, sessionEndTime, playheadMs, playbackSpeed, isPlaying } = get();
+    const { sessionStartTimeMs, sessionEndTime, playheadMs, playbackSpeed, isPlaying, isScrubbing } = get();
 
-    if (!isPlaying || sessionStartTimeMs == null || sessionEndTime == null || playheadMs == null) {
+    if (!isPlaying || sessionStartTimeMs == null || sessionEndTime == null || playheadMs == null || isScrubbing) {
       return false;
     }
 

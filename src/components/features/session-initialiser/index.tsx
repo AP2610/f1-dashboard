@@ -30,7 +30,6 @@ export const SessionInitialiser = ({
   const setSession = useSessionTimeLineStore((state) => state.setSession);
   const setDriverLaps = useLapsStore((state) => state.setDriverLaps);
   const setDriverData = useDriverStore((state) => state.setDriverData);
-  const driverLaps = useLapsStore((state) => state.driverLaps);
 
   useFetchAdditionalLaps();
 
@@ -39,10 +38,6 @@ export const SessionInitialiser = ({
     setDriverLaps(initialLapsByDriver);
     setDriverData(sessionDriverDataWithQualifying);
   }, [sessionStartTimeMs, sessionEndTime, sessionDriverDataWithQualifying, initialLapsByDriver, qualifyingPositionData]);
-
-  useEffect(() => {
-    console.log('driverLaps', driverLaps);
-  }, [driverLaps]);
 
   return null;
 };
